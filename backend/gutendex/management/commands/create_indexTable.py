@@ -22,6 +22,7 @@ class Command(BaseCommand):
                 rawtext = requests.get(format.url).text
                 tokens = nltk.word_tokenize(rawtext)
                 tokens = [word.lower() for word in tokens if word.isalpha() and word.lower() not in stop_words]
+                tokens = [stemmer.stem(word) for word in tokens]
 
                 word_counts = {}
                 for word in tokens:
