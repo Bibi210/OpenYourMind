@@ -13,6 +13,11 @@ class Author(models.Model):
         return self.name
 
 
+class Keyword(models.Model):
+    word = models.CharField(max_length=255, null=True)
+    def __str__(self):
+        return self.word
+
 class Book(models.Model):
     id = models.IntegerField(primary_key=True)
     title = models.CharField(max_length=255)
@@ -23,6 +28,7 @@ class Book(models.Model):
     copyright = models.BooleanField(default=False)
     media_type = models.CharField(max_length=50)
     download_count = models.IntegerField(default=0)
+    keywords = models.ManyToManyField('Keyword', through = 'BookKeyword', related_name='books')
 
     def __str__(self):
         return self.title
@@ -36,9 +42,14 @@ class Format(models.Model):
     def __str__(self):
         return f"{self.book.title} - {self.format_type}"
 
-class Keyword(models.Model):
-    word = models.CharField(max_length=255, null=True)
-    books = models.ManyToManyField('Book', related_name='keywords')
+class BookKeyword(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    keyword = models.ForeignKey(Keyword, on_delete=models.CASCADE)
+    occurrences = models.IntegerField(default=0)
+    repetition_percentage = models.FloatField(default=0.0)
 
     def __str__(self):
-        return self.word
+        return f"{self.book.title} - {self.keyword.word}"
+        
+
+
