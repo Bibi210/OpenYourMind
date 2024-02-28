@@ -4,7 +4,8 @@ from django.db import models
 
 from django.db import models
 
-class KeyWord(models.Model):
+class Keyword(models.Model):
+    word = models.CharField(max_length=255)
     books = models.ManyToManyField('Book', related_name='keywords')
 
 class Author(models.Model):
