@@ -19,4 +19,13 @@
         python manage.py runserver
         python manage.py runserver ?PORT
 
-    
+## Create SuperUser
+    python manage.py createsuperuser
+
+# FrontEnd 
+
+## How to Install and Use 
+
+    flutter pub get 
+    flutter run
+
