@@ -26,3 +26,4 @@ class Command(BaseCommand):
                     if not Keyword.objects.filter(word=keyword).exists():
                         Keyword.objects.create(word=keyword)
                     Keyword.objects.get(word=keyword).books.add(format.book)
+                
