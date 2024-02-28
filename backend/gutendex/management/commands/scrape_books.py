@@ -8,12 +8,16 @@ class Command(BaseCommand):
 
     def add_books_to_db(self, books_data):
         for book_data in books_data:
-            authors = [Author.objects.get_or_create(name=author['name'])[0] for author in book_data['authors']]
             book = Book.objects.create(
+                id=book_data['id'],
                 title=book_data['title'],
-                download_count=book_data['download_count']
-                # Ajoutez d'autres champs selon vos besoins
+                subjects=book_data['subjects'],
+                bookshelves=book_data['bookshelves'],
+                languages=book_data['languages'],
+                download_count=book_data['download_count'],
+
             )
+            authors = [Author.objects.get_or_create(name=author['name'])[0] for author in book_data['authors']]
             book.authors.set(authors)
             book.save()
             print(f'Added book: {book.title}')

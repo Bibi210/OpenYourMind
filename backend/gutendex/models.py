@@ -17,6 +17,7 @@ class Author(models.Model):
 
 
 class Book(models.Model):
+    id = models.IntegerField(primary_key=True)
     title = models.CharField(max_length=255)
     authors = models.ManyToManyField(Author, related_name='books')
     subjects = models.TextField(blank=True)
