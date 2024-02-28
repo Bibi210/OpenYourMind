@@ -4,6 +4,8 @@ from django.db import models
 
 from django.db import models
 
+class KeyWord(models.Model):
+    books = models.ManyToManyField('Book', related_name='keywords')
 
 class Author(models.Model):
     name = models.CharField(max_length=255)
