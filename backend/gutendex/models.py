@@ -4,10 +4,6 @@ from django.db import models
 
 from django.db import models
 
-class Keyword(models.Model):
-    word = models.CharField(max_length=255)
-    books = models.ManyToManyField('Book', related_name='keywords')
-
 class Author(models.Model):
     name = models.CharField(max_length=255)
     birth_year = models.IntegerField(null=True, blank=True)
@@ -39,3 +35,10 @@ class Format(models.Model):
 
     def __str__(self):
         return f"{self.book.title} - {self.format_type}"
+
+class Keyword(models.Model):
+    word = models.CharField(max_length=255, null=True)
+    books = models.ManyToManyField('Book', related_name='keywords')
+
+    def __str__(self):
+        return self.word
