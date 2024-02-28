@@ -4,6 +4,7 @@
 
     pip install django
     pip install django djangorestframework requests
+    pip install requests
 
 ## Activate env 
     source env/bin/activate
