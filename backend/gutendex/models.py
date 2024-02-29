@@ -4,6 +4,7 @@ from django.db import models
 
 from django.db import models
 
+
 class Author(models.Model):
     name = models.CharField(max_length=255)
     birth_year = models.IntegerField(null=True, blank=True)
@@ -15,8 +16,10 @@ class Author(models.Model):
 
 class Keyword(models.Model):
     word = models.CharField(max_length=255, null=True)
+
     def __str__(self):
         return self.word
+
 
 class Book(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -28,7 +31,7 @@ class Book(models.Model):
     copyright = models.BooleanField(default=False)
     media_type = models.CharField(max_length=50)
     download_count = models.IntegerField(default=0)
-    keywords = models.ManyToManyField('Keyword', through = 'BookKeyword', related_name='books')
+    keywords = models.ManyToManyField('Keyword', through='BookKeyword', related_name='books')
 
     def __str__(self):
         return self.title
@@ -42,6 +45,7 @@ class Format(models.Model):
     def __str__(self):
         return f"{self.book.title} - {self.format_type}"
 
+
 class BookKeyword(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     keyword = models.ForeignKey(Keyword, on_delete=models.CASCADE)
@@ -50,6 +54,3 @@ class BookKeyword(models.Model):
 
     def __str__(self):
         return f"{self.book.title} - {self.keyword.word}"
-        
-
-
