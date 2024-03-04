@@ -41,5 +41,4 @@ class Command(BaseCommand):
                         occurrences = count,
                         repetition_percentage = repetition_percentage
                     )
-
-                    print(f'Added keyword: {keyword.word} to book: {format.book.title} with {count} occurrences and {repetition_percentage}% repetition percentage.')
+            print(f'End book {format.book.title}')
