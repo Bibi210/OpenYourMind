@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
@@ -41,11 +42,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       Navigator.pushNamed(context, '/result');
                     }),
               ),
-              for (int i = 0; i < 2; i++)
-                Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Image.network(
-                        "https://www.gutenberg.org/cache/epub/84/pg84.cover.medium.jpg"))
             ])));
   }
 }
