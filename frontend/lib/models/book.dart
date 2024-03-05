@@ -2,7 +2,7 @@ class Book {
   final int id;
 
   final String title;
-  final List<dynamic> authors;
+  final String authors;
   final String imageUrl;
   final String textUrl;
   final String subjects;
@@ -32,7 +32,7 @@ class Book {
     return Book(
         id: json['id'],
         title: json['title'],
-        authors : json['authors'],
+        authors : json['authors'][0]['name'],
         imageUrl: imageUrl,
         textUrl: textUrl,
         subjects: json['subjects'],

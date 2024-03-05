@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-
+import 'package:frontend/components/multiple_book.dart';
+import 'package:frontend/components/search_bar.dart';
+import '../manager/book_manager.dart';
+import '../models/book.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -9,39 +12,51 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final TextEditingController _controller = TextEditingController();
+  final BookManager _bookManager = BookManager();
+  List<Book>? books;
+
+  void _loadTopBooks() async {
+    try {
+      var topBooks = await _bookManager.getTopBooks();
+      setState(() => books = topBooks);
+    } catch (e) {
+      setState(() => books = []);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTopBooks();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
-        appBar: AppBar(
-          title: const Align(
-              alignment: Alignment.centerLeft, child: Text("OpenYourMind")),
-          elevation: 0,
+      appBar: AppBar(
+        title: const Align(
+          alignment: Alignment.centerLeft,
+          child: Text("OpenYourMind"),
         ),
-        body: SingleChildScrollView(
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(
-                    top: screenHeight / 3,
-                    left: screenWidth / 10,
-                    right: screenWidth / 10),
-                child: TextField(
-                    controller: _controller,
-                    decoration: const InputDecoration(
-                      hintText: "Enter a book name, author or genre",
-                      prefixIcon: Icon(Icons.search),
-                      filled: false,
-                    ),
-                    onSubmitted: (String value) {
-                      Navigator.pushNamed(context, '/result');
-                    }),
-              ),
-            ])));
+        elevation: 0,
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 200.0, horizontal: 200.0),
+              child: SearchBarCustom(),
+            ),
+            if (books == null)
+              const CircularProgressIndicator()
+            else if (books!.isEmpty)
+              const Text('No top books found.')
+            else
+              MultipleBook(label: "Top Books", books: books!),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -14,13 +14,13 @@ class AppTheme {
           onPrimary: Colors.white,
           background: Color.fromARGB(255, 236, 236, 236),
         ),
-        fontFamily: 'Poppins',
         // Définissez d'autres propriétés de thème ici
         textTheme: const TextTheme(
           displayLarge: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w600,
             color: Color.fromRGBO(26, 7, 79, 1),
+            fontFamily: 'Poppins',
           ),
           bodyLarge: TextStyle(
             fontSize: 16,
