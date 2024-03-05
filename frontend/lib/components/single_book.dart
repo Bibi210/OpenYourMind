@@ -8,7 +8,6 @@ class SingleBook extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(book.authors);
     return Card(
           surfaceTintColor: Theme.of(context).colorScheme.surface,
           child: Column(
