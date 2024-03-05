@@ -7,12 +7,12 @@ class AppTheme {
         colorScheme: const ColorScheme.light(
           primary: Color.fromRGBO(26, 7, 79, 1),
           secondary: Color.fromRGBO(149, 203, 72, 1),
-          surface: Color.fromRGBO(212, 212, 212, 1),
+          surface: Color.fromARGB(255, 255, 255, 255),
           surfaceVariant: Color.fromRGBO(149, 203, 72, 0.19),
           onSurface: Colors.black87,
           onSecondary: Colors.black87,
           onPrimary: Colors.white,
-          background: Colors.white,
+          background: Color.fromARGB(255, 236, 236, 236),
         ),
         fontFamily: 'Poppins',
         // Définissez d'autres propriétés de thème ici
