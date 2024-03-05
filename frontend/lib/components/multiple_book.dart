@@ -21,7 +21,7 @@ class _MultipleBookState extends State<MultipleBook> {
       child: Column(
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.only(top : 8.0, bottom: 20),
             child: Text(widget.label),
           ),
           SizedBox(
