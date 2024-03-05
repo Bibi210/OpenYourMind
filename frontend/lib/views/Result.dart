@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 
 class ResultPage extends StatefulWidget {
   const ResultPage({Key? key}) : super(key: key);
@@ -75,25 +74,49 @@ class _ResultPage extends State<ResultPage> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.network(
-              'https://www.designforwriters.com/wp-content/uploads/2017/10/design-for-writers-book-cover-tf-2-a-million-to-one.jpg',
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Chapter List:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            // Display the chapter list using a ListView.builder
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: content.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(content[index]),
-                );
-              },
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Column(
+                  children: [
+                    Image.network(
+                      'https://www.designforwriters.com/wp-content/uploads/2017/10/design-for-writers-book-cover-tf-2-a-million-to-one.jpg',
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 50), // Add spacing between columns
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Chapter List:',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: 500,
+                      child: Card(
+                        surfaceTintColor: Theme.of(context).colorScheme.surface,
+                        elevation: 3,
+                        margin: const EdgeInsets.all(5),
+                        child: Container(
+                          height: 500, // Adjust the height as needed
+                          width: 500,
+                          child: ListView.builder(
+                            itemCount: content.length,
+                            itemBuilder: (context, index) => ListTile(
+                              title: Text(content[index]),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ],
         ),
