@@ -56,7 +56,7 @@ class BookKeyword(models.Model):
         return f"{self.book.title} - {self.keyword.word}"
 
 
-class JackardIndex(models.Model):
+class JaccardIndex(models.Model):
     book1 = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='book1')
     book2 = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='book2')
     index = models.FloatField(default=0.0)
