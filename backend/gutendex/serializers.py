@@ -13,13 +13,15 @@ class KeywordSerializer(serializers.ModelSerializer):
         model = Keyword
         fields = '__all__'
 
+
 class URLSerializer(serializers.ModelSerializer):
     class Meta:
         model = Format
         fields = ['format_type', 'url']
 
     def to_representation(self, instance):
-        if instance.format_type in ['text/plain; charset=us-ascii', 'text/plain; charset=utf-8','image/jpeg', 'image/png']:
+        if instance.format_type in ['text/plain; charset=us-ascii', 'text/plain; charset=utf-8', 'image/jpeg',
+                                    'image/png']:
             return super().to_representation(instance)
         else:
             return {}
@@ -27,12 +29,11 @@ class URLSerializer(serializers.ModelSerializer):
 
 class BookSerializer(serializers.ModelSerializer):
     authors = AuthorSerializer(many=True, read_only=True)
-    keywords = KeywordSerializer(many=True, read_only=True)
     urls = URLSerializer(many=True, read_only=True, source='formats')
 
     class Meta:
         model = Book
-        fields = '__all__'
+        exclude = ('keywords',)
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
