@@ -25,16 +25,14 @@ class _ResultPage extends State<ResultPage> {
   }
 
   Future<void> loadContent(Book book) async {
-      try {
-        var contentBook = await _bookManager.getContentBook(book.textUrl);
-        setState(() {
-          content = contentBook;
-          actualBook = book;
-          _isLoading = false;
-        });
-      } catch(e) {
-        print(e);
-      }
+    try {
+      setState(() {
+        actualBook = book;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -44,55 +42,88 @@ class _ResultPage extends State<ResultPage> {
       appBar: AppBar(
         title: const Text('Chapter List and Content'),
       ),
-      body: _isLoading ? const CircularProgressIndicator() :
-      SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Column(
-                  children: [
-                    Image.network(actualBook.imageUrl),
-                  ],
-                ),
-                const SizedBox(width: 50), // Add spacing between columns
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Chapter List:',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      width: 500,
-                      child: Card(
-                        surfaceTintColor: Theme.of(context).colorScheme.surface,
-                        elevation: 3,
-                        margin: const EdgeInsets.all(5),
-                        child: SizedBox(
-                          height: 500, // Adjust the height as needed
-                          width: 500,
-                          child: ListView.builder(
-                            itemCount: content.length,
-                            itemBuilder: (context, index) => ListTile(
-                              title: Text(content[index]),
+      body: _isLoading
+          ? const CircularProgressIndicator()
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Column(
+                        children: [
+                          Image.network(actualBook.imageUrl),
+                        ],
+                      ),
+                      const SizedBox(width: 50), // Add spacing between columns
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Chapter List:',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 10),
+                          SizedBox(
+                            width: 500,
+                            child: Card(
+                              surfaceTintColor:
+                                  Theme.of(context).colorScheme.surface,
+                              elevation: 3,
+                              margin: const EdgeInsets.all(5),
+                              child: SizedBox(
+                                height: 500,
+                                width: 500,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Title: ${actualBook.title}',
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        'Authors: ${actualBook.authors.elementAt(0)["name"].toString()}',
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        'Subjects: ${actualBook.subjects}',
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        'Bookshelves: ${actualBook.bookshelves.join(", ")}',
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
-      ),
     );
   }
 }

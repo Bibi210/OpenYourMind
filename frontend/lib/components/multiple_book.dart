@@ -6,8 +6,7 @@ class MultipleBook extends StatefulWidget {
   final List<Book> books;
   final String label;
 
-  const MultipleBook(
-      {super.key, required this.books, required this.label});
+  const MultipleBook({super.key, required this.books, required this.label});
 
   @override
   State<MultipleBook> createState() => _MultipleBookState();
@@ -16,23 +15,23 @@ class MultipleBook extends StatefulWidget {
 class _MultipleBookState extends State<MultipleBook> {
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color : Theme.of(context).colorScheme.surfaceVariant,
+    return Container(
+      color: Theme.of(context).colorScheme.surfaceVariant,
       child: Column(
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(top : 8.0, bottom: 20),
+            padding: const EdgeInsets.only(top: 8.0, bottom: 20),
             child: Text(widget.label),
           ),
           SizedBox(
-            height : 500,
+            height: MediaQuery.of(context).size.height * 0.65,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: widget.books.length,
               itemBuilder: (BuildContext context, int index) {
-                return SizedBox (
-                  width : MediaQuery.of(context).size.width * 0.2,
-                  child : SingleBook(book: widget.books[index]));
+                return SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    child: SingleBook(book: widget.books[index]));
               },
             ),
           ),

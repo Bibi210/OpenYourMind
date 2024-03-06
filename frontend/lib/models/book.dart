@@ -1,27 +1,30 @@
+import 'dart:convert';
+
 class Book {
   final int id;
 
   final String title;
-  final String authors;
+  final List<dynamic> authors;
   final String imageUrl;
   final String textUrl;
-  final String subjects;
-  final String bookshelves;
-  final List<String> keywords;
+  String subjects;
+  final List<String> bookshelves;
+  final List<dynamic> keywords;
 
-  Book({required this.id,
-    required this.title,
-    required this.authors,
-    required this.imageUrl,
-    required this.textUrl,
-    required this.subjects,
-    required this.bookshelves,
-    required this.keywords});
+  Book(
+      {required this.id,
+      required this.title,
+      required this.authors,
+      required this.imageUrl,
+      required this.textUrl,
+      required this.subjects,
+      required this.bookshelves,
+      required this.keywords});
 
-  factory Book.fromJson(Map<String, dynamic> json) {
+  factory Book.fromJson(Map<String, dynamic> js) {
     String imageUrl = "";
     String textUrl = "";
-    for (var url in json['urls']) {
+    for (var url in js['urls']) {
       if (url['format_type'].contains('image')) {
         imageUrl = url['url'];
       }
@@ -29,14 +32,21 @@ class Book {
         textUrl = url['url'];
       }
     }
+    String subjects = js['subjects'];
+    subjects = subjects.replaceAll('[', '');
+    subjects = subjects.replaceAll(']', '');
+    subjects = subjects.replaceAll('"', '');
+    subjects = subjects.replaceAll('/', '');
+    subjects = subjects.replaceAll('\'', '');
     return Book(
-        id: json['id'],
-        title: json['title'],
-        authors : json['authors'][0]['name'],
+        id: js['id'],
+        title: js['title'],
+        authors: js['authors'],
         imageUrl: imageUrl,
         textUrl: textUrl,
-        subjects: json['subjects'],
-        bookshelves: json['bookshelves'],
-        keywords: json['keywords'].cast<String>());
-    }
+        subjects: subjects,
+        bookshelves: List<String>.from(
+            json.decode((js['bookshelves'].replaceAll("'", '"')))),
+        keywords: js['keywords']);
+  }
 }

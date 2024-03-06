@@ -20,6 +20,7 @@ class _MyHomePageState extends State<MyHomePage> {
       var topBooks = await _bookManager.getTopBooks();
       setState(() => books = topBooks);
     } catch (e) {
+      print(e);
       setState(() => books = []);
     }
   }
