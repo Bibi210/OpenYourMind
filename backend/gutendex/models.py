@@ -15,7 +15,7 @@ class Author(models.Model):
 
 
 class Keyword(models.Model):
-    word = models.CharField(max_length=255, null=True,db_index=True)
+    word = models.CharField(max_length=255, null=True, db_index=True)
 
     def __str__(self):
         return self.word
@@ -54,3 +54,12 @@ class BookKeyword(models.Model):
 
     def __str__(self):
         return f"{self.book.title} - {self.keyword.word}"
+
+
+class JackardIndex(models.Model):
+    book1 = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='book1')
+    book2 = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='book2')
+    index = models.FloatField(default=0.0)
+
+    def __str__(self):
+        return f"{self.book1.title} - {self.book2.title} - {self.index}"
