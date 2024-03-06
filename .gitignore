@@ -2,3 +2,4 @@
 .vscode
 /backend/env
 .DS_Store
+/backend/db.sqlite3
