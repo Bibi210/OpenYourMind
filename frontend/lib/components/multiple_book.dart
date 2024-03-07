@@ -18,7 +18,7 @@ class _MultipleBookState extends State<MultipleBook> {
   Widget build(BuildContext context) {
     return Container(
       color: Theme.of(context).colorScheme.surfaceVariant,
-      height: MediaQuery.of(context).size.height * 0.75,
+      height: MediaQuery.of(context).size.height,
       child: Column(
         children: <Widget>[
           Padding(

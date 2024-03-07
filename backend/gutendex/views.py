@@ -28,8 +28,8 @@ def getRequestedPage(request, queryset):
 
 class TopBooks(APIView):
     def get(self, request):
-        top = Book.objects.order_by('-download_count')
-        serializer = BookSerializer(getRequestedPage(request, top), many=True)
+        top = Book.objects.order_by('-download_count')[:10]
+        serializer = BookSerializer(top, many=True)
         return Response(serializer.data)
 
 

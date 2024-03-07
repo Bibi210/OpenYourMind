@@ -21,6 +21,7 @@ class _MyHomePageState extends State<MyHomePage> {
       var topBooks = await _bookManager.getTopBooks();
       setState(() => books = topBooks);
     } catch (e) {
+      print(e);
       setState(() => books = []);
     }
   }
@@ -40,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             const Padding(
-              padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 0.0),
+              padding: EdgeInsets.symmetric(vertical: 100.0, horizontal: 0.0),
               child: SearchBarCustom(isAppbar : false),
             ),
             if (books == null)

@@ -16,12 +16,14 @@ class ApiCall {
     }
   }
 
-  Future<dynamic> fetchBookText(String url) async {
-    final response = await http.get(Uri.parse(url));
+  Future<dynamic> fetchBooksBySearch(String search) async {
+    var url = Uri.parse("${_baseUrl}search?search=$search");
+    var response = await http.get(url);
+
     if (response.statusCode == 200) {
-      return response.body;
+      return jsonDecode(response.body);
     } else {
-      throw Exception('Failed to load book text');
+      throw Exception('Failed to load books by search');
     }
   }
 

@@ -36,6 +36,12 @@ class Book {
     subjects = subjects.replaceAll('"', '');
     subjects = subjects.replaceAll('/', '');
     subjects = subjects.replaceAll('\'', '');
+    print(js['bookshelves'].replaceAll('"',""));
+    print(js['authors']);
+
+    String bookshelvescleaned = js['bookshelves'].substring(1, js['bookshelves'].length - 1);
+
+
     return Book(
         id: js['id'],
         title: js['title'],
@@ -43,8 +49,6 @@ class Book {
         imageUrl: imageUrl,
         textUrl: textUrl,
         subjects: subjects,
-        bookshelves: List<String>.from(
-            json.decode((js['bookshelves'].replaceAll("'", '"'))))
-    );
+        bookshelves: bookshelvescleaned.split(','));
   }
 }
