@@ -1,18 +1,45 @@
-from gutendex.models import Book, BookKeyword, JaccardIndex
-from itertools import combinations
-from django.db import models
-from django.db.models import F, Value
-from django.db.models.functions import Coalesce
+from gutendex.models import Book, JaccardIndex
 from django.core.management.base import BaseCommand
+import networkx as nx
 
 
 class Command(BaseCommand):
     help = 'Compute the Jaccard index for each pair of books'
 
     def handle(self, *args, **kwargs):
+        """ self.jaccardindex() """
+        self.betweenness_centrality()
+
+    def betweenness_centrality(self):
+        G = nx.Graph()
+        print('Creating graph')
+        for book in Book.objects.all().order_by('id'):
+            G.add_node(book.id)
+        print('Graph created')
+        print('Adding edges')
+        jaccard_indexes = JaccardIndex.objects.all()
+        average = sum([jaccard.index for jaccard in jaccard_indexes]) / len(jaccard_indexes)
+        threshold = average + (average * 0.1)
+        print(f'Average: {average}')
+        print(f'Threshold: {threshold}')
+        for jaccard in jaccard_indexes:
+            if jaccard.index < threshold:
+                G.add_edge(jaccard.book1_id, jaccard.book2_id)
+        print(f'Edges added : {G.number_of_edges()}')
+        print('Computing betweenness centrality')
+        betweenness_centrality = nx.betweenness_centrality(G)
+        print('Betweenness centrality computed')
+        print('Writing betweenness centrality to database')
+        for book_id, centrality in betweenness_centrality.items():
+            book = Book.objects.get(id=book_id)
+            book.betweenness_centrality = centrality
+            book.save()
+        print('Betweenness centrality computation finished')
+
+    def jaccardindex(self):
         JaccardIndex.objects.all().delete()
         from django.db import connection
-        nbBooks = Book.objects.count()
+        nb_book = Book.objects.count()
         for book in Book.objects.all():
             raw_query = f"""
             INSERT INTO gutendex_jaccardindex (book1_id, book2_id, "index")
@@ -38,7 +65,7 @@ class Command(BaseCommand):
             with connection.cursor() as cursor:
                 cursor.execute(raw_query)
             print(f'Processed book: {book.title}')
-            print(f'remaining books: {nbBooks}')
-            nbBooks -= 1
+            print(f'remaining books: {nb_book}')
+            nb_book -= 1
         JaccardIndex.objects.filter(index=0).delete()
         print('Jaccard index computation finished')

@@ -32,6 +32,7 @@ class Book(models.Model):
     media_type = models.CharField(max_length=50)
     download_count = models.IntegerField(default=0)
     keywords = models.ManyToManyField('Keyword', through='BookKeyword', related_name='books')
+    betweenness_centrality = models.FloatField(default=0.0)
 
     def __str__(self):
         return self.title
