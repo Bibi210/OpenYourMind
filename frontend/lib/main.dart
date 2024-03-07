@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/views/BookPage.dart';
 import 'package:frontend/views/Home.dart';
-import 'package:frontend/views/Result.dart';
+import 'package:frontend/views/book_description_page.dart';
+import 'models/book.dart';
 import 'routes.dart';
 import 'theme.dart';
 
@@ -19,11 +19,24 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: AppTheme.lightTheme,
       initialRoute: AppRoutes.home,
-      routes: {
-        AppRoutes.home: (context) => const MyHomePage(),
-        AppRoutes.book: (context) => const BookPage(),
-        AppRoutes.result: (context) => const ResultPage(),
+      onGenerateRoute: (RouteSettings settings) {
+        // Gestion des routes en fonction de settings.name
+        switch (settings.name) {
+          case AppRoutes.home:
+            return MaterialPageRoute(builder: (_) => const MyHomePage());
+          case AppRoutes.bookDescription:
+            final book = settings.arguments as Book;
+            return MaterialPageRoute(builder: (_) => BookDescriptionPage(book: book));
+          case AppRoutes.searchResult:
+            //return MaterialPageRoute(builder: (_) => const ResultPage());
+          case AppRoutes.bookContent:
+            //return MaterialPageRoute(builder: (_) => const ResultPage());
+          default:
+          // Gestion des routes non définies
+            return MaterialPageRoute(builder: (_) => const MyHomePage());
+        }
       },
+
     );
   }
 }

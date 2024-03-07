@@ -1,5 +1,6 @@
 class AppRoutes {
   static const String home = '/';
-  static const String result = '/result';
-  static const String book = '/book';
+  static const String searchResult = '/searchResult';
+  static const String bookDescription = '/bookDescription';
+  static const String bookContent = '/bookContent';
 }

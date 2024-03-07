@@ -1,51 +1,16 @@
 import 'package:flutter/material.dart';
-import '../manager/book_manager.dart';
+import '../components/app_bar_custom.dart';
 import '../models/book.dart';
 
-class ResultPage extends StatefulWidget {
-  const ResultPage({super.key});
-
-  @override
-  State<ResultPage> createState() => _ResultPage();
-}
-
-class _ResultPage extends State<ResultPage> {
-  final BookManager _bookManager = BookManager();
-  List<String> content = [];
-  bool _isLoading = true;
-  late Book actualBook;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final Book book = ModalRoute.of(context)!.settings.arguments as Book;
-      loadContent(book);
-    });
-  }
-
-  Future<void> loadContent(Book book) async {
-    try {
-      setState(() {
-        actualBook = book;
-        _isLoading = false;
-      });
-    } catch (e) {
-      print(e);
-    }
-  }
+class BookDescriptionPage extends StatelessWidget {
+  final Book book;
+  const BookDescriptionPage({super.key,required this.book});
 
   @override
   Widget build(BuildContext context) {
-    print(ModalRoute.of(context)!.settings.arguments);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chapter List and Content'),
-        
-      ),
-      body: _isLoading
-          ? const CircularProgressIndicator()
-          : SingleChildScrollView(
+      appBar: const AppBarCustom(),
+      body: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -55,7 +20,7 @@ class _ResultPage extends State<ResultPage> {
                     children: [
                       Column(
                         children: [
-                          Image.network(actualBook.imageUrl),
+                          Image.network(book.imageUrl),
                         ],
                       ),
                       const SizedBox(width: 50), // Add spacing between columns
@@ -85,7 +50,7 @@ class _ResultPage extends State<ResultPage> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Title: ${actualBook.title}',
+                                        'Title: ${book.title}',
                                         style: const TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
@@ -93,21 +58,21 @@ class _ResultPage extends State<ResultPage> {
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
-                                        'Authors: ${actualBook.authors.elementAt(0)["name"].toString()}',
+                                        'Authors: ${book.authors.elementAt(0)["name"].toString()}',
                                         style: const TextStyle(
                                           fontSize: 16,
                                         ),
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
-                                        'Subjects: ${actualBook.subjects}',
+                                        'Subjects: ${book.subjects}',
                                         style: const TextStyle(
                                           fontSize: 16,
                                         ),
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
-                                        'Bookshelves: ${actualBook.bookshelves.join(", ")}',
+                                        'Bookshelves: ${book.bookshelves.join(", ")}',
                                         style: const TextStyle(
                                           fontSize: 16,
                                         ),

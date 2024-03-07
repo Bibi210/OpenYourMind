@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/book.dart';
+import '../routes.dart';
 
 class SingleBook extends StatelessWidget {
   final Book book;
@@ -12,7 +13,7 @@ class SingleBook extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, '/result', arguments: book);
+              Navigator.pushNamed(context, AppRoutes.bookDescription, arguments: book);
             },
             child: MouseRegion(
                 cursor: SystemMouseCursors.click,

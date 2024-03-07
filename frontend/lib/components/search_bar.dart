@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/routes.dart';
 
 class SearchBarCustom extends StatefulWidget {
   const SearchBarCustom({super.key});
@@ -54,7 +55,7 @@ class _SearchBarState extends State<SearchBarCustom> {
       ),
       onSubmitted: (String value) {
         if (value.trim().isNotEmpty) {
-          Navigator.pushNamed(context, '/result', arguments: value);
+          Navigator.pushNamed(context, AppRoutes.searchResult, arguments: value);
         }
       },
       focusNode: _focusNode,
