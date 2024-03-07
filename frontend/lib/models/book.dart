@@ -9,7 +9,6 @@ class Book {
   final String textUrl;
   String subjects;
   final List<String> bookshelves;
-  final List<dynamic> keywords;
 
   Book(
       {required this.id,
@@ -18,8 +17,7 @@ class Book {
       required this.imageUrl,
       required this.textUrl,
       required this.subjects,
-      required this.bookshelves,
-      required this.keywords});
+      required this.bookshelves});
 
   factory Book.fromJson(Map<String, dynamic> js) {
     String imageUrl = "";
@@ -46,7 +44,7 @@ class Book {
         textUrl: textUrl,
         subjects: subjects,
         bookshelves: List<String>.from(
-            json.decode((js['bookshelves'].replaceAll("'", '"')))),
-        keywords: js['keywords']);
+            json.decode((js['bookshelves'].replaceAll("'", '"'))))
+    );
   }
 }
