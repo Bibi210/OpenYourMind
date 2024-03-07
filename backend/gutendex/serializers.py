@@ -40,6 +40,20 @@ class BookSerializer(serializers.ModelSerializer):
         data['urls'] = [url for url in data['urls'] if url]
         return data
 
+class DetailedBookSerializer(serializers.ModelSerializer):
+    authors = AuthorSerializer(many=True, read_only=True)
+    keywords = KeywordSerializer(many=True, read_only=True)
+    urls = URLSerializer(many=True, read_only=True, source='formats')
+
+    class Meta:
+        model = Book
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['urls'] = [url for url in data['urls'] if url]
+        data['keywords'] = [keyword['word'] for keyword in data['keywords']]
+        return data
 
 class BookKeywordSerializer(serializers.ModelSerializer):
     book = BookSerializer(read_only=True)
