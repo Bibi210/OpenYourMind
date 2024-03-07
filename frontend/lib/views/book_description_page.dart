@@ -1,10 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/components/book_card.dart';
+import 'package:frontend/components/book_image.dart';
+import 'package:frontend/components/multiple_book.dart';
 import '../components/app_bar_custom.dart';
+import '../components/button_custom.dart';
 import '../models/book.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../manager/book_manager.dart';
 
-class BookDescriptionPage extends StatelessWidget {
+class BookDescriptionPage extends StatefulWidget {
   final Book book;
   const BookDescriptionPage({super.key, required this.book});
+  @override
+  State<BookDescriptionPage> createState() => _BookDescriptionPage();
+}
+
+class _BookDescriptionPage extends State<BookDescriptionPage> {
+  final BookManager _bookManager = BookManager();
+  List<Book>? books;
+
+  void _loadTopBooks() async {
+    try {
+      var topBooks = await _bookManager.getTopBooks();
+      setState(() => books = topBooks);
+    } catch (e) {
+      print(e);
+      setState(() => books = []);
+    }
+  }
+
+  @override
+  void initState() {
+    _loadTopBooks();
+    super.initState();
+  }
+
+  _launchURL() async {
+    final Uri url = Uri.parse(widget.book.textUrl.toString());
+    if (!await launchUrl(url)) {
+      throw Exception('Could not launch $url');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,69 +54,29 @@ class BookDescriptionPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(
-                  width: 0,
-                  height: 0,
-                  child: Image.network(book.imageUrl),
-                ),
-                const SizedBox(width: 50), // Add spacing between columns
+                BookImage(imageUrl: widget.book.imageUrl),
+                CustomButton(text: "Read Book", onPressed: _launchURL),
+                // Add spacing between columns
               ],
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 10),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  child: Card(
-                    surfaceTintColor: Theme.of(context).colorScheme.surface,
-                    elevation: 3,
-                    margin: const EdgeInsets.all(5),
-                    child: SizedBox(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              book.title,
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.primary,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Authors: ${book.authors.elementAt(0)["name"].toString()}',
-                              style: const TextStyle(
-                                fontSize: 16,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Subjects: ${book.subjects}',
-                              style: const TextStyle(
-                                fontSize: 16,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Bookshelves: ${book.bookshelves.join(", ")}',
-                              style: const TextStyle(
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                const SizedBox(height: 12),
+                BookCard(book: widget.book),
               ],
             ),
+            const SizedBox(height: 20),
+            if (books == null)
+              const CircularProgressIndicator()
+            else if (books!.isEmpty)
+              const Text('No books found.')
+            else
+              MultipleBook(
+                  label: "You may like this",
+                  books: books!,
+                  isResultPage: false)
           ],
         ),
       ),
