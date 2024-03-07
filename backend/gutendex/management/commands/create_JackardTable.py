@@ -40,4 +40,5 @@ class Command(BaseCommand):
             print(f'Processed book: {book.title}')
             print(f'remaining books: {nbBooks}')
             nbBooks -= 1
+        JaccardIndex.objects.filter(index=0).delete()
         print('Jaccard index computation finished')
