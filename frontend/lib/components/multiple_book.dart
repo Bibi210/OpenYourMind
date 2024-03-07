@@ -3,10 +3,11 @@ import 'package:frontend/components/single_book.dart';
 import '../models/book.dart';
 
 class MultipleBook extends StatefulWidget {
+  final bool isResultPage;
   final List<Book> books;
   final String label;
 
-  const MultipleBook({super.key, required this.books, required this.label});
+  const MultipleBook({super.key, required this.books, required this.label,required this.isResultPage});
 
   @override
   State<MultipleBook> createState() => _MultipleBookState();
@@ -17,6 +18,7 @@ class _MultipleBookState extends State<MultipleBook> {
   Widget build(BuildContext context) {
     return Container(
       color: Theme.of(context).colorScheme.surfaceVariant,
+      height: MediaQuery.of(context).size.height * 0.75,
       child: Column(
         children: <Widget>[
           Padding(
@@ -30,7 +32,7 @@ class _MultipleBookState extends State<MultipleBook> {
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.65,
             child: ListView.builder(
-              scrollDirection: Axis.horizontal,
+              scrollDirection: widget.isResultPage ? Axis.vertical : Axis.horizontal,
               itemCount: widget.books.length,
               itemBuilder: (BuildContext context, int index) {
                 return SizedBox(

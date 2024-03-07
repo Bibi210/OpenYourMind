@@ -21,7 +21,6 @@ class _MyHomePageState extends State<MyHomePage> {
       var topBooks = await _bookManager.getTopBooks();
       setState(() => books = topBooks);
     } catch (e) {
-      print(e);
       setState(() => books = []);
     }
   }
@@ -35,21 +34,21 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppBarCustom(),
+      appBar: const AppBarCustom(isSearchBar: false),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 0.0),
-              child: SearchBarCustom(),
+              child: SearchBarCustom(isAppbar : false),
             ),
             if (books == null)
               const CircularProgressIndicator()
             else if (books!.isEmpty)
-              const Text('No top books found.')
+              const Text('No books found.')
             else
-              MultipleBook(label: "Top Books", books: books!),
+              MultipleBook(label: "Top Books", books: books!, isResultPage: false),
           ],
         ),
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/views/Home.dart';
 import 'package:frontend/views/book_description_page.dart';
+import 'package:frontend/views/result_page.dart';
 import 'models/book.dart';
 import 'routes.dart';
 import 'theme.dart';
@@ -20,7 +21,6 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       initialRoute: AppRoutes.home,
       onGenerateRoute: (RouteSettings settings) {
-        // Gestion des routes en fonction de settings.name
         switch (settings.name) {
           case AppRoutes.home:
             return MaterialPageRoute(builder: (_) => const MyHomePage());
@@ -28,7 +28,8 @@ class MyApp extends StatelessWidget {
             final book = settings.arguments as Book;
             return MaterialPageRoute(builder: (_) => BookDescriptionPage(book: book));
           case AppRoutes.searchResult:
-            //return MaterialPageRoute(builder: (_) => const ResultPage());
+            final search = settings.arguments as String;
+            return MaterialPageRoute(builder: (_) => ResultPage(search: search));
           case AppRoutes.bookContent:
             //return MaterialPageRoute(builder: (_) => const ResultPage());
           default:
