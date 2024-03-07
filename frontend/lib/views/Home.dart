@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/components/app_bar_custom.dart';
 import 'package:frontend/components/multiple_book.dart';
 import 'package:frontend/components/search_bar.dart';
 import '../manager/book_manager.dart';
@@ -34,14 +35,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Align (
-          alignment: Alignment.center,
-          child :
-          Image.asset('assets/images/AppBarLogo.png',
-              width : MediaQuery.of(context).size.width * 0.5)
-        ),
-        ),
+      appBar: const AppBarCustom(),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
