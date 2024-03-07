@@ -20,8 +20,12 @@ class _MultipleBookState extends State<MultipleBook> {
       child: Column(
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(top: 8.0, bottom: 20),
-            child: Text(widget.label),
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(widget.label,
+              style : const TextStyle(
+                fontWeight : FontWeight.bold,
+                fontSize : 18
+              ) ),
           ),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.65,

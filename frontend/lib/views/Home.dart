@@ -35,18 +35,19 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Align(
-          alignment: Alignment.centerLeft,
-          child: Text("OpenYourMind"),
+        title: Align (
+          alignment: Alignment.center,
+          child :
+          Image.asset('assets/images/AppBarLogo.png',
+              width : MediaQuery.of(context).size.width * 0.5)
         ),
-        elevation: 0,
-      ),
+        ),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             const Padding(
-              padding: EdgeInsets.symmetric(vertical: 200.0, horizontal: 200.0),
+              padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 0.0),
               child: SearchBarCustom(),
             ),
             if (books == null)

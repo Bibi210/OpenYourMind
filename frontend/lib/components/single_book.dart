@@ -20,15 +20,26 @@ class SingleBook extends StatelessWidget {
                   surfaceTintColor: Theme.of(context).colorScheme.surface,
                   child: Column(
                     children: <Widget>[
-                      SizedBox(
+                      Container(
+                          decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(10.0),
+                                  topRight: Radius.circular(10.0))),
                           height: MediaQuery.of(context).size.height * 0.5,
                           child: Image.network(book.imageUrl,
                               fit: BoxFit.scaleDown,
                               width: MediaQuery.of(context).size.width)),
-                      ListTile(
-                          title: Text(book.title),
-                          subtitle: Text(
-                              book.authors.elementAt(0)['name'].toString()))
+                      Container(
+                          color: Theme.of(context).colorScheme.surface,
+                          child: ListTile(
+                              title: Text(book.title),
+                              subtitle: Text(book.authors
+                                  .elementAt(0)['name']
+                                  .toString())
+                          )
+                              ),
+
                     ],
                   ),
                 ))));
