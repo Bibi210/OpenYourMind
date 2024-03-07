@@ -41,6 +41,7 @@ class _ResultPage extends State<ResultPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Chapter List and Content'),
+        
       ),
       body: _isLoading
           ? const CircularProgressIndicator()
@@ -59,7 +60,7 @@ class _ResultPage extends State<ResultPage> {
                       ),
                       const SizedBox(width: 50), // Add spacing between columns
                       Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           const Text(
                             'Chapter List:',
@@ -75,8 +76,8 @@ class _ResultPage extends State<ResultPage> {
                               elevation: 3,
                               margin: const EdgeInsets.all(5),
                               child: SizedBox(
-                                height: 500,
-                                width: 500,
+                                height: MediaQuery.of(context).size.width * 0.3,
+                                width: MediaQuery.of(context).size.width * 0.3,
                                 child: Padding(
                                   padding: const EdgeInsets.all(16.0),
                                   child: Column(
