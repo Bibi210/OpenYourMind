@@ -72,8 +72,7 @@ class SearchBook(APIView):
         queryset = sorted_title_books + [book for book in sorted_books if book not in titlebooks]
         return queryset
 
-    def get(self, request, sentence):
-        tokens = get_token(sentence)
+    def search(self, tokens):
         print(f'Querying for {tokens}')
         queryset = self.get_matching_all_tokens(tokens)
         print(f'Queryset count: {len(queryset)}')
@@ -88,9 +87,15 @@ class SearchBook(APIView):
             sorted_books = sorted(queryset, key=partial_apply, reverse=True)
             sorted_title_books = sorted(titlebooks, key=partial_apply, reverse=True)
             queryset = sorted_title_books + [book for book in sorted_books if book not in titlebooks]
+        return queryset
 
+    def get(self, request, sentence):
+        tokens = get_token(sentence)
+        print(f'Querying for {tokens}')
+        queryset = self.search(tokens)
         queryset = get_requested_page(request, queryset)
-        return Response(BookSerializer(queryset, many=True).data)
+        serializer = BookSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class GetHighestBetweenness(APIView):
@@ -129,4 +134,8 @@ class Suggest(APIView):
                 best_percentage = average
                 best_token = token
         print(f'Best token: {best_token}')
-        return BookDetail().get(request, best_token)
+        recherche = SearchBook()
+        queryset = recherche.search(tokens=[best_token])
+        queryset = [book for book in queryset if book.pk != book_id]
+        serializer = BookSerializer(queryset, many=True)
+        return Response(serializer.data)
