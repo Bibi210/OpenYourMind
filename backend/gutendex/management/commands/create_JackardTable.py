@@ -7,10 +7,10 @@ class Command(BaseCommand):
     help = 'Compute the Jaccard index for each pair of books'
 
     def handle(self, *args, **kwargs):
-        """ self.jaccardindex() """
-        self.betweenness_centrality()
+        self.jaccardindex()
+        self.compute_centrality()
 
-    def betweenness_centrality(self):
+    def compute_centrality(self):
         G = nx.Graph()
         print('Creating graph')
         for book in Book.objects.all().order_by('id'):
@@ -19,28 +19,29 @@ class Command(BaseCommand):
         print('Adding edges')
         jaccard_indexes = JaccardIndex.objects.all()
         average = sum([jaccard.index for jaccard in jaccard_indexes]) / len(jaccard_indexes)
-        threshold = average + (average * 0.1)
-        print(f'Average: {average}')
+        threshold = average - (average * 0.3)
         print(f'Threshold: {threshold}')
         for jaccard in jaccard_indexes:
             if jaccard.index < threshold:
                 G.add_edge(jaccard.book1_id, jaccard.book2_id)
         print(f'Edges added : {G.number_of_edges()}')
-        print('Computing betweenness centrality')
+        print('Computing centrality')
         betweenness_centrality = nx.betweenness_centrality(G)
-        print('Betweenness centrality computed')
-        print('Writing betweenness centrality to database')
-        for book_id, centrality in betweenness_centrality.items():
-            book = Book.objects.get(id=book_id)
-            book.betweenness_centrality = centrality
+        closeness_centrality = nx.closeness_centrality(G)
+        print('Centrality computed')
+        print('Writing centrality to database')
+        for book in Book.objects.all():
+            book.betweenness_centrality = betweenness_centrality[book.id]
+            book.closeness_centrality = closeness_centrality[book.id]
             book.save()
-        print('Betweenness centrality computation finished')
+        print('Centrality computation finished')
 
     def jaccardindex(self):
         JaccardIndex.objects.all().delete()
         from django.db import connection
         nb_book = Book.objects.count()
-        for book in Book.objects.all():
+        descOrder = Book.objects.order_by('-id')
+        for book in descOrder:
             raw_query = f"""
             INSERT INTO gutendex_jaccardindex (book1_id, book2_id, "index")
             SELECT
