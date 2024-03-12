@@ -53,6 +53,7 @@ class _BookDescriptionPage extends State<BookDescriptionPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 BookImage(imageUrl: widget.book.imageUrl),
                 CustomButton(text: "Read Book", onPressed: _launchURL),
