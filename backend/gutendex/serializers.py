@@ -43,7 +43,7 @@ class BookSerializer(serializers.ModelSerializer):
 
 class DetailedBookSerializer(serializers.ModelSerializer):
     keywords = KeywordSerializer(many=True, read_only=True)
-    clossness_centrality = serializers.FloatField()
+    closeness_centrality  = serializers.FloatField()
     betweenness_centrality = serializers.FloatField()
 
     class Meta:
