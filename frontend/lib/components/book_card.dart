@@ -4,7 +4,6 @@ import 'package:frontend/models/book.dart';
 
 class BookCard extends StatelessWidget {
   final Book book;
-  
 
   const BookCard({super.key, required this.book});
 
@@ -31,7 +30,9 @@ class BookCard extends StatelessWidget {
               const SizedBox(height: 6),
               TextContentCard(
                   text1: "Authors: ",
-                  text2: book.authors.elementAt(0)["name"].toString()),
+                  text2: book.authors.isEmpty
+                      ? ""
+                      : book.authors.elementAt(0)["name"].toString()),
               const SizedBox(height: 6),
               TextContentCard(text1: "Subjects: ", text2: book.subjects),
               const SizedBox(height: 8),

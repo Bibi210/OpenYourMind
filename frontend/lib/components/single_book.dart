@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/components/book_image.dart';
 import '../models/book.dart';
 import '../routes.dart';
 
@@ -29,21 +30,17 @@ class SingleBook extends StatelessWidget {
                                   topLeft: Radius.circular(10.0),
                                   topRight: Radius.circular(10.0))),
                           height: MediaQuery.of(context).size.height * 0.5,
-                          child: Image.network(book.imageUrl,
-                              fit: BoxFit.scaleDown,
-                              width: MediaQuery.of(context).size.width)))),
+                          child: BookImage(
+                              imageUrl: book.imageUrl, inCard: true)))),
               Container(
                   color: Theme.of(context).colorScheme.surface,
-                  child: Flexible(
-                      child: ListTile(
-                          title: Text(book.title,
-                              maxLines: 1, overflow: TextOverflow.ellipsis),
-                          subtitle: book.authors.isEmpty
-                              ? const Text("")
-                              : Text(
-                                  book.authors.elementAt(0)['name'].toString(),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis)))),
+                  child: ListTile(
+                      title: Text(book.title,
+                          maxLines: 1, overflow: TextOverflow.ellipsis),
+                      subtitle: book.authors.isEmpty
+                          ? const Text("")
+                          : Text(book.authors.elementAt(0)['name'].toString(),
+                              maxLines: 1, overflow: TextOverflow.ellipsis))),
             ],
           ),
         ));
