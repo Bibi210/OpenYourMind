@@ -93,7 +93,6 @@ class SearchBook(APIView):
                 query |= Q(title__icontains=token)
             title_match = Book.objects.filter(query)
             
-
             print(f'Queryset count: {len(result)}')
             print(f'Title match count: {title_match.query}')
             partial_apply = partial(calculate_score, tokens)
@@ -133,16 +132,10 @@ class Suggest(APIView):
         print(f'Book id: {book_id}')
         book = Book.objects.get(pk=book_id)
         """ Get token with the lowest repetition percentage in all books """
-        best_token = None
-        best_idf = 0
-        for token in get_token(book.title):
-            word = Keyword.objects.get(word=token)
-            if word.idf > best_idf:
-                best_idf = word.idf
-                best_token = token
-
-        print(f'Best token: {best_token}')
-        queryset = SearchBook().search(tokens=[best_token])
+        idf_sorted_tokens = sorted(get_token(book.title), key=lambda token: Keyword.objects.get(
+            word=token).idf, reverse=True)[:2]
+        print(f'Best tokens: {idf_sorted_tokens}')
+        queryset = SearchBook().search(tokens=idf_sorted_tokens)
         queryset.remove(book)
         jaccard_index_map = {}
         for b in queryset:
