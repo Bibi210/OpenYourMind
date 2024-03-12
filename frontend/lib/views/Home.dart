@@ -15,7 +15,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final BookManager _bookManager = BookManager();
   List<Book>? books;
-  final TextEditingController _searchController = TextEditingController();
 
   void _loadTopBooks() async {
     try {
@@ -41,10 +40,8 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             const Padding(
-              padding:
-                  EdgeInsets.symmetric(vertical: 100.0, horizontal: 0.0),
-              child: SearchBarCustom(
-                  isAppbar: false),
+              padding: EdgeInsets.symmetric(vertical: 100.0, horizontal: 0.0),
+              child: SearchBarCustom(isAppbar: false),
             ),
             if (books == null)
               const CircularProgressIndicator()

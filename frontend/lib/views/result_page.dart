@@ -56,9 +56,7 @@ class _ResultPage extends State<ResultPage> {
           search: widget.search,
           onSearch: _searchAndUpdateBooks),
       body: books == null
-          ? const Center(
-              child:
-                  CircularProgressIndicator()) 
+          ? const Center(child: CircularProgressIndicator())
           : (books!.isEmpty)
               ? const Text(
                   'No books found.',
