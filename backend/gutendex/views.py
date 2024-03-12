@@ -1,10 +1,11 @@
 import nltk
-from django.db.models import Q, Avg
+from django.db.models import Q, Avg, Sum
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+import math
 
-from gutendex.models import Book, BookKeyword, JaccardIndex
+from gutendex.models import Book, BookKeyword, JaccardIndex, Keyword
 from gutendex.serializers import BookSerializer, DetailedBookSerializer
 from functools import partial
 
@@ -30,17 +31,27 @@ def get_requested_page(request, queryset):
 
 
 def calculate_score(tokens, book):
-    avg_idf = 0
+    average_tf = 0
+    average_idf = 0
     for token in tokens:
-        book_keyword = BookKeyword.objects.filter(book=book, keyword__word=token).first()
-        if book_keyword:
-            avg_idf += book_keyword.repetition_percentage
+        try:
+            word = Keyword.objects.get(word=token)
+            idf = word.idf
+            """ ICI HYPER LONG GENRE 99% du temps de recherche how to fix ? """
+            tf = BookKeyword.objects.get(book=book, keyword__word=word).repetition_percentage
+            """ ICI HYPER LONG GENRE 99% du temps de recherche how to fix ? """
+            average_tf += tf
+            average_idf += idf
+        except BookKeyword.DoesNotExist:
+            pass
 
-    avg_idf = avg_idf / len(tokens)
-    avg_idf = 0.7 * avg_idf
+    tokenlen = len(tokens)
+    average_idf = average_idf / tokenlen
+    average_tf = average_tf / tokenlen
+    average_tf = 0.7 * average_tf * average_idf
     closeness_score = 0.15 * book.closeness_centrality
     betweenness_score = 0.15 * book.betweenness_centrality
-    return avg_idf + closeness_score + betweenness_score
+    return average_tf + closeness_score + betweenness_score
 
 
 def get_token(sentence):
@@ -67,27 +78,27 @@ class SearchBook(APIView):
             titlebooks = titlebooks.filter(title__icontains=token)
 
         partial_apply = partial(calculate_score, tokens)
-        sorted_books = sorted(queryset, key=partial_apply, reverse=True)
-        sorted_title_books = sorted(titlebooks, key=partial_apply, reverse=True)
-        queryset = sorted_title_books + [book for book in sorted_books if book not in titlebooks]
+        titlebooks = titlebooks.exclude(pk__in=[b.pk for b in queryset])
+        queryset = sorted(titlebooks, key=partial_apply, reverse=True) + \
+            sorted(queryset, key=partial_apply, reverse=True)
         return queryset
 
     def search(self, tokens):
         print(f'Querying for {tokens}')
-        queryset = self.get_matching_all_tokens(tokens)
-        print(f'Queryset count: {len(queryset)}')
+        title_match = self.get_matching_all_tokens(tokens)
+        print(f'Queryset count: {len(title_match)}')
         """ If the queryset is empty, we will try to find books that have similar keywords to the ones in the sentence"""
-        if len(queryset) == 0:
-            queryset = Book.objects.filter(keywords__word__in=tokens)
+        if len(title_match) == 0:
+            title_match = Book.objects.filter(keywords__word__in=tokens)
             titlebooks = Book.objects.all()
             for token in tokens:
                 titlebooks |= Book.objects.filter(title__icontains=token)
 
             partial_apply = partial(calculate_score, tokens)
-            sorted_books = sorted(queryset, key=partial_apply, reverse=True)
+            sorted_books = sorted(title_match, key=partial_apply, reverse=True)
             sorted_title_books = sorted(titlebooks, key=partial_apply, reverse=True)
-            queryset = sorted_title_books + [book for book in sorted_books if book not in titlebooks]
-        return queryset
+            title_match = sorted_title_books + sorted_books
+        return title_match
 
     def get(self, request, sentence):
         tokens = get_token(sentence)
@@ -136,6 +147,13 @@ class Suggest(APIView):
         print(f'Best token: {best_token}')
         recherche = SearchBook()
         queryset = recherche.search(tokens=[best_token])
-        queryset = [book for book in queryset if book.pk != book_id]
-        serializer = BookSerializer(queryset, many=True)
+        jaccard_index_map = {}
+        for b in queryset:
+            index = JaccardIndex.objects.filter(Q(book1=book, book2=b) | Q(book1=b, book2=book)).first()
+            jaccard_index_map[b] = index.index if index else 2
+
+        averageindex = sum(jaccard_index_map.values()) / len(jaccard_index_map)
+        threshold = averageindex - (averageindex * 0.15)
+        queryset = list(filter(lambda b: jaccard_index_map[b] < threshold, queryset))
+        serializer = BookSerializer(get_requested_page(request, queryset), many=True)
         return Response(serializer.data)

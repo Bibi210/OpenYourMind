@@ -3,3 +3,4 @@
 /backend/env
 .DS_Store
 /backend/db.sqlite3
+/backend/__pycache__

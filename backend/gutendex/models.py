@@ -16,7 +16,8 @@ class Author(models.Model):
 
 class Keyword(models.Model):
     word = models.CharField(max_length=255, null=True, db_index=True)
-
+    idf = models.FloatField(default=0.0)
+    
     def __str__(self):
         return self.word
 

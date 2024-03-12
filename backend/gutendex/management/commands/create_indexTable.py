@@ -2,7 +2,9 @@ import nltk
 import requests
 from django.core.management.base import BaseCommand
 from gutendex.models import Keyword, Format, BookKeyword, Book
+from django.db.models import Count
 from django.db import transaction
+import math
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -17,6 +19,27 @@ class Command(BaseCommand):
         Keyword.objects.all().delete()
         BookKeyword.objects.all().delete()
         self.create_Table()
+        self.compute_idf()
+
+    def compute_idf(self):
+        print('Computing IDF')
+        total_books = Book.objects.count()
+        print('Retrieving document frequencies for all keywords')
+        keyword_df_map = (
+            BookKeyword.objects
+            .values('keyword_id')
+            .annotate(document_frequency=Count('book_id', distinct=True))
+            .values_list('keyword_id', 'document_frequency')
+        )
+        keyword_df_map = dict(keyword_df_map)
+        print('Updating the IDF field of all keywords')
+        for keyword in Keyword.objects.all():
+            document_frequency = keyword_df_map.get(keyword.id, 0)
+            idf = math.log(total_books / document_frequency)
+            # Update the idf field of the keyword
+            keyword.idf = idf
+            keyword.save()
+        print("IDF calculation completed.")
 
     def create_Table(self):
         stop_words = set(nltk.corpus.stopwords.words('english'))
