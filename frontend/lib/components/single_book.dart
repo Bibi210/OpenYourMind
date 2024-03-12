@@ -11,18 +11,18 @@ class SingleBook extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: GestureDetector(
-            onTap: () {
-              Navigator.pushNamed(context, AppRoutes.bookDescription,
-                  arguments: book);
-            },
-            child: MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: Card(
-                  surfaceTintColor: Theme.of(context).colorScheme.surface,
-                  child: Column(
-                    children: <Widget>[
-                      Container(
+        child: Card(
+          surfaceTintColor: Theme.of(context).colorScheme.surface,
+          child: Column(
+            children: <Widget>[
+              GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRoutes.bookDescription,
+                        arguments: book);
+                  },
+                  child: MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: Container(
                           decoration: BoxDecoration(
                               color: Colors.grey[200],
                               borderRadius: const BorderRadius.only(
@@ -31,18 +31,21 @@ class SingleBook extends StatelessWidget {
                           height: MediaQuery.of(context).size.height * 0.5,
                           child: Image.network(book.imageUrl,
                               fit: BoxFit.scaleDown,
-                              width: MediaQuery.of(context).size.width)),
-                      Container(
-                          color: Theme.of(context).colorScheme.surface,
-                          child: ListTile(
-                              title: Text(book.title),
-                              subtitle: book.authors.isEmpty
-                                  ? const Text("")
-                                  : Text(book.authors
-                                      .elementAt(0)['name']
-                                      .toString()))),
-                    ],
-                  ),
-                ))));
+                              width: MediaQuery.of(context).size.width)))),
+              Container(
+                  color: Theme.of(context).colorScheme.surface,
+                  child: Flexible(
+                      child: ListTile(
+                          title: Text(book.title,
+                              maxLines: 1, overflow: TextOverflow.ellipsis),
+                          subtitle: book.authors.isEmpty
+                              ? const Text("")
+                              : Text(
+                                  book.authors.elementAt(0)['name'].toString(),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis)))),
+            ],
+          ),
+        ));
   }
 }
