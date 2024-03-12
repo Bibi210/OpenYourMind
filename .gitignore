@@ -4,3 +4,4 @@
 .DS_Store
 /backend/db.sqlite3
 /backend/__pycache__
+/backend/gutendex/__pycache__
