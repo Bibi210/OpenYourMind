@@ -9,21 +9,31 @@ class AppBarCustom extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isScreenWide = MediaQuery.sizeOf(context).width >= 600;
     return AppBar(
       title: isSearchBar
           ? Row(
-              children: [
-                Expanded(
-                  child: SearchBarCustom(isAppbar: true, search : search),
-                ),
-              ],
-            )
+              children: isScreenWide
+                  ? [
+                      Image.asset(
+                        'assets/images/AppBarLogo.png',
+                        width: MediaQuery.of(context).size.width * 0.2,
+                      ),
+                      Expanded(
+                        child: SearchBarCustom(isAppbar: true, search: search),
+                      )
+                    ]
+                  : [
+                      Expanded(
+                        child: SearchBarCustom(isAppbar: true, search: search),
+                      )
+                    ])
           : Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
                   'assets/images/AppBarLogo.png',
-                  width: MediaQuery.of(context).size.width * 0.5,
+                  width: isScreenWide ? MediaQuery.of(context).size.width * 0.2 : MediaQuery.of(context).size.width * 0.5 ,
                 ),
               ],
             ),

@@ -5,7 +5,7 @@ class SearchBarCustom extends StatefulWidget {
   final String? search;
   final bool isAppbar;
 
-  const SearchBarCustom({super.key, required this.isAppbar,this.search});
+  const SearchBarCustom({super.key, required this.isAppbar, this.search});
 
   @override
   State<SearchBarCustom> createState() => _SearchBarState();
@@ -42,32 +42,37 @@ class _SearchBarState extends State<SearchBarCustom> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: _controller,
-      decoration: InputDecoration(
-        hintText: _hintText,
-        hintStyle:
-            TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
-        prefixIcon: widget.isAppbar
-            ? null
-            : Icon(Icons.search, color: Theme.of(context).colorScheme.primary),
-        filled: true,
-        fillColor: widget.isAppbar
-            ? Colors.grey[300]
-            : Theme.of(context).colorScheme.surface,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide.none,
-        ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-      ),
-      onSubmitted: (String value) {
-        if (value.trim().isNotEmpty) {
-          Navigator.pushNamed(context, AppRoutes.searchResult,
-              arguments: value);
-        }
-      },
-      focusNode: _focusNode,
-    );
+    return Container(
+        margin: EdgeInsets.symmetric(
+            horizontal: MediaQuery.of(context).size.width * 0.008),
+        child: TextField(
+          controller: _controller,
+          decoration: InputDecoration(
+            hintText: _hintText,
+            hintStyle: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant),
+            prefixIcon: widget.isAppbar
+                ? null
+                : Icon(Icons.search,
+                    color: Theme.of(context).colorScheme.primary),
+            filled: true,
+            fillColor: widget.isAppbar
+                ? Colors.grey[300]
+                : Theme.of(context).colorScheme.surface,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+          ),
+          onSubmitted: (String value) {
+            if (value.trim().isNotEmpty) {
+              Navigator.pushNamed(context, AppRoutes.searchResult,
+                  arguments: value);
+            }
+          },
+          focusNode: _focusNode,
+        ));
   }
 }
