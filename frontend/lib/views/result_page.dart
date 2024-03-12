@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:frontend/components/multiple_book.dart';
 import 'package:frontend/manager/book_manager.dart';
 import 'package:frontend/models/book.dart';
-
 import '../components/app_bar_custom.dart';
 
 class ResultPage extends StatefulWidget {
@@ -26,6 +25,22 @@ class _ResultPage extends State<ResultPage> {
     }
   }
 
+  void _loadResultAndUpdateBooks(String query) async {
+    try {
+      var resultBooks = await _bookManager.getBooksBySearch(query);
+      setState(() => books = resultBooks);
+    } catch (e) {
+      setState(() => books = []);
+    }
+  }
+
+  void _searchAndUpdateBooks(String query) {
+    setState(() {
+      books = null;
+    });
+    _loadResultAndUpdateBooks(query);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -35,11 +50,20 @@ class _ResultPage extends State<ResultPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarCustom(isSearchBar: true, search: widget.search),
+      appBar: AppBarCustom(
+          isSearchBar: true,
+          isReset: true,
+          search: widget.search,
+          onSearch: _searchAndUpdateBooks),
       body: books == null
-          ? const CircularProgressIndicator()
+          ? const Center(
+              child:
+                  CircularProgressIndicator()) 
           : (books!.isEmpty)
-              ? const Text('No books found.')
+              ? const Text(
+                  'No books found.',
+                  textAlign: TextAlign.center,
+                )
               : MultipleBook(
                   isResultPage: true, label: "Search Results", books: books!),
     );

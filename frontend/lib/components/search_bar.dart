@@ -4,16 +4,18 @@ import 'package:frontend/routes.dart';
 class SearchBarCustom extends StatefulWidget {
   final String? search;
   final bool isAppbar;
+  final Function(String)? onSearch;
 
-  const SearchBarCustom({super.key, required this.isAppbar, this.search});
+  const SearchBarCustom(
+      {super.key, required this.isAppbar, this.search, this.onSearch});
 
   @override
   State<SearchBarCustom> createState() => _SearchBarState();
 }
 
 class _SearchBarState extends State<SearchBarCustom> {
-  final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+  final TextEditingController _controller = TextEditingController();
   String _hintText = "Enter a book name, author, or genre";
 
   @override
@@ -68,8 +70,15 @@ class _SearchBarState extends State<SearchBarCustom> {
           ),
           onSubmitted: (String value) {
             if (value.trim().isNotEmpty) {
-              Navigator.pushNamed(context, AppRoutes.searchResult,
-                  arguments: value);
+              widget.isAppbar
+                  ? widget.onSearch?.call(value)
+                  : Navigator.pushNamed(context, AppRoutes.searchResult,
+                          arguments: value)
+                      .then((result) {
+                      if (result == 'reset') {
+                        _controller.clear();
+                      }
+                    });
             }
           },
           focusNode: _focusNode,
