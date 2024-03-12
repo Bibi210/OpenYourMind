@@ -15,7 +15,7 @@ class BookImage extends StatelessWidget {
             ? SizedBox(
                 child: Image.network(
                 imageUrl,
-                fit: BoxFit.fitWidth,
+                fit: BoxFit.scaleDown,
                 width: MediaQuery.of(context).size.width,
               ))
             : SizedBox(

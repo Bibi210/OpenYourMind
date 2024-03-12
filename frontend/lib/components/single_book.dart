@@ -22,7 +22,7 @@ class SingleBook extends StatelessWidget {
                         arguments: book);
                   },
                   child: MouseRegion(
-                      cursor: SystemMouseCursors.click,
+                    cursor: SystemMouseCursors.click,
                       child: Container(
                           decoration: BoxDecoration(
                               color: Colors.grey[200],

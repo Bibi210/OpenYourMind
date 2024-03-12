@@ -57,6 +57,16 @@ class _SearchBarState extends State<SearchBarCustom> {
                 ? null
                 : Icon(Icons.search,
                     color: Theme.of(context).colorScheme.primary),
+            suffixIcon: _controller.text.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    setState(() {
+                      _controller.clear();
+                    });
+                  },
+                )
+              : null,
             filled: true,
             fillColor: widget.isAppbar
                 ? Colors.grey[300]
