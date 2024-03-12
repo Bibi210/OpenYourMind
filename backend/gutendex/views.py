@@ -40,7 +40,7 @@ def calculate_score(tokens, book):
             tf = BookKeyword.objects.filter(book=book).get(keyword=word).repetition_percentage
             average_tf += tf
             average_idf += idf
-        except BookKeyword.DoesNotExist:
+        except (BookKeyword.DoesNotExist, Keyword.DoesNotExist):
             pass
 
     tokenlen = len(tokens)
@@ -83,20 +83,24 @@ class SearchBook(APIView):
 
     def search(self, tokens):
         print(f'Querying for {tokens}')
-        title_match = self.get_matching_all_tokens(tokens)
-        print(f'Queryset count: {len(title_match)}')
+        result = self.get_matching_all_tokens(tokens)
+        print(f'Queryset count: {len(result)}')
         """ If the queryset is empty, we will try to find books that have similar keywords to the ones in the sentence"""
-        if len(title_match) == 0:
-            title_match = Book.objects.filter(keywords__word__in=tokens)
-            titlebooks = Book.objects.all()
+        if len(result) == 0:
+            result = Book.objects.filter(keywords__word__in=tokens)
+            query = Q()
             for token in tokens:
-                titlebooks |= Book.objects.filter(title__icontains=token)
+                query |= Q(title__icontains=token)
+            title_match = Book.objects.filter(query)
+            
 
+            print(f'Queryset count: {len(result)}')
+            print(f'Title match count: {title_match.query}')
             partial_apply = partial(calculate_score, tokens)
-            sorted_books = sorted(title_match, key=partial_apply, reverse=True)
-            sorted_title_books = sorted(titlebooks, key=partial_apply, reverse=True)
-            title_match = sorted_title_books + sorted_books
-        return title_match
+            sorted_books = sorted(result, key=partial_apply, reverse=True)
+            sorted_title_books = sorted(title_match, key=partial_apply, reverse=True)
+            result = sorted_title_books + sorted_books
+        return result
 
     def get(self, request, sentence):
         tokens = get_token(sentence)
