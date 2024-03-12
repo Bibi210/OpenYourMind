@@ -7,11 +7,12 @@ class MultipleBook extends StatefulWidget {
   final List<Book> books;
   final String label;
 
-  const MultipleBook(
-      {super.key,
-      required this.books,
-      required this.label,
-      required this.isResultPage});
+  const MultipleBook({
+    super.key,
+    required this.books,
+    required this.label,
+    required this.isResultPage,
+  });
 
   @override
   State<MultipleBook> createState() => _MultipleBookState();
@@ -20,18 +21,22 @@ class MultipleBook extends StatefulWidget {
 class _MultipleBookState extends State<MultipleBook> {
   @override
   Widget build(BuildContext context) {
+    final appBarHeight = Scaffold.of(context).appBarMaxHeight ?? 0;
+    final statusBarHeight = MediaQuery.of(context).padding.top;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final availableHeight = screenHeight - statusBarHeight - appBarHeight;
+
     return Container(
       color: Theme.of(context).colorScheme.surfaceVariant,
-      height: widget.isResultPage
-          ? MediaQuery.of(context).size.height
-          : MediaQuery.of(context).size.height * 0.65,
+      height: widget.isResultPage ? availableHeight : availableHeight * 0.75,
       child: Column(
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Text(widget.label,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+            child: Text(
+              widget.label,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
           ),
           Flexible(
             child: ListView.builder(
@@ -40,8 +45,11 @@ class _MultipleBookState extends State<MultipleBook> {
               itemCount: widget.books.length,
               itemBuilder: (BuildContext context, int index) {
                 return SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    child: SingleBook(book: widget.books[index]));
+                  width: widget.isResultPage
+                      ? double.infinity
+                      : MediaQuery.of(context).size.width * 0.8,
+                  child: SingleBook(book: widget.books[index]),
+                );
               },
             ),
           ),
