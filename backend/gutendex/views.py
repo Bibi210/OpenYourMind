@@ -1,13 +1,17 @@
 import nltk
-from django.db.models import Q, Avg, Sum
+from django.db.models import Q
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-import math
+import requests
+import re
+from concurrent import futures
+
 
 from gutendex.models import Book, BookKeyword, JaccardIndex, Keyword
 from gutendex.serializers import BookSerializer, DetailedBookSerializer
 from functools import partial
+from django.core.paginator import Paginator
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -22,12 +26,8 @@ stemmer = nltk.stem.SnowballStemmer('english')
 
 def get_requested_page(request, queryset):
     page = request.GET.get('page')
-    if page is not None and page.isdigit():
-        page = int(page)
-        start = (page - 1) * page_size
-        end = start + page_size
-        return queryset[start:end]
-    return queryset[:page_size]
+    paginator = Paginator(queryset, page_size)
+    return paginator.get_page(page)
 
 
 def calculate_score(tokens, book):
@@ -37,9 +37,7 @@ def calculate_score(tokens, book):
         try:
             word = Keyword.objects.get(word=token)
             idf = word.idf
-            """ ICI HYPER LONG GENRE 99% du temps de recherche how to fix ? """
-            tf = BookKeyword.objects.get(book=book, keyword__word=word).repetition_percentage
-            """ ICI HYPER LONG GENRE 99% du temps de recherche how to fix ? """
+            tf = BookKeyword.objects.filter(book=book).get(keyword=word).repetition_percentage
             average_tf += tf
             average_idf += idf
         except BookKeyword.DoesNotExist:
@@ -130,30 +128,58 @@ class Suggest(APIView):
     def get(self, request, book_id):
         print(f'Book id: {book_id}')
         book = Book.objects.get(pk=book_id)
-        tokens = get_token(book.title)
         """ Get token with the lowest repetition percentage in all books """
         best_token = None
-        best_percentage = 100
-        for token in tokens:
-            average = 0
-            for b in Book.objects.all().exclude(pk=book_id):
-                contains = BookKeyword.objects.filter(book=b, keyword__word=token).first()
-                number = contains.repetition_percentage if contains else 0
-                average += number
-            average = average / (Book.objects.count() - 1)
-            if average < best_percentage:
-                best_percentage = average
+        best_idf = 0
+        for token in get_token(book.title):
+            word = Keyword.objects.get(word=token)
+            if word.idf > best_idf:
+                best_idf = word.idf
                 best_token = token
+
         print(f'Best token: {best_token}')
-        recherche = SearchBook()
-        queryset = recherche.search(tokens=[best_token])
+        queryset = SearchBook().search(tokens=[best_token])
+        queryset.remove(book)
         jaccard_index_map = {}
         for b in queryset:
-            index = JaccardIndex.objects.filter(Q(book1=book, book2=b) | Q(book1=b, book2=book)).first()
-            jaccard_index_map[b] = index.index if index else 2
+            index = JaccardIndex.objects.get(Q(book1=book, book2=b) | Q(book1=b, book2=book))
+            jaccard_index_map[b] = index.index
 
         averageindex = sum(jaccard_index_map.values()) / len(jaccard_index_map)
-        threshold = averageindex - (averageindex * 0.15)
-        queryset = list(filter(lambda b: jaccard_index_map[b] < threshold, queryset))
+        queryset = list(filter(lambda b: jaccard_index_map[b] < averageindex, queryset))
         serializer = BookSerializer(get_requested_page(request, queryset), many=True)
+        return Response(serializer.data)
+
+
+class RegExSearch(APIView):
+
+    def check_book(self, book, regex, format_type):
+        url = book.formats.get(format_type=format_type).url
+        rawtext = requests.get(url).text
+        resut = re.search(regex, rawtext)
+        print(f'Book: {book.title} - Found: {resut}')
+        return book if resut else None
+
+    def get(self, request, regex):
+        eligible_books = Book.objects.filter(formats__format_type__in=['text/plain; charset=us-ascii']).distinct()
+        """ Create Batch of 10 books """
+        batch = []
+        matchs = []
+        check = partial(self.check_book, regex=regex, format_type='text/plain; charset=us-ascii')
+        executor = futures.ThreadPoolExecutor()
+        requested_page = request.GET.get('page')
+        if requested_page is None:
+            requested_page = 1
+        else:
+            requested_page = int(requested_page)
+        print(f'Requested page: {requested_page}')
+        for book in eligible_books:
+            batch.append(book)
+            if len(batch) == page_size + (page_size * 0.5):
+                matchs += list(filter(lambda b: b is not None, executor.map(check, batch)))
+                batch = []
+            if len(matchs) > page_size * requested_page:
+                break
+        output = get_requested_page(request, matchs)
+        serializer = BookSerializer(output, many=True)
         return Response(serializer.data)
