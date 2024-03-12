@@ -4,8 +4,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 import requests
-import re
 from concurrent import futures
+import subprocess
 
 
 from gutendex.models import Book, BookKeyword, JaccardIndex, Keyword
@@ -92,7 +92,7 @@ class SearchBook(APIView):
             for token in tokens:
                 query |= Q(title__icontains=token)
             title_match = Book.objects.filter(query)
-            
+
             print(f'Queryset count: {len(result)}')
             print(f'Title match count: {title_match.query}')
             partial_apply = partial(calculate_score, tokens)
@@ -153,9 +153,14 @@ class RegExSearch(APIView):
     def check_book(self, book, regex, format_type):
         url = book.formats.get(format_type=format_type).url
         rawtext = requests.get(url).text
-        resut = re.search(regex, rawtext)
-        print(f'Book: {book.title} - Found: {resut}')
-        return book if resut else None
+        try:
+            subprocess.run(['egrep', '-q', regex, '-'], input=rawtext.encode(),
+                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+            print(f'Book {book.title} MATCH')
+        except subprocess.CalledProcessError:
+            print(f'Book {book.title} NO')
+            return None
+        return book
 
     def get(self, request, regex):
         eligible_books = Book.objects.filter(formats__format_type__in=['text/plain; charset=us-ascii']).distinct()
