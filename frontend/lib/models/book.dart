@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class Book {
   final int id;
 
@@ -36,11 +34,8 @@ class Book {
     subjects = subjects.replaceAll('"', '');
     subjects = subjects.replaceAll('/', '');
     subjects = subjects.replaceAll('\'', '');
-    print(js['bookshelves'].replaceAll('"',""));
-    print(js['authors']);
-
-    String bookshelvescleaned = js['bookshelves'].substring(1, js['bookshelves'].length - 1);
-
+    String bookshelvescleaned =
+        js['bookshelves'].substring(1, js['bookshelves'].length - 1);
 
     return Book(
         id: js['id'],

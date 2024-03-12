@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -17,7 +16,7 @@ class ApiCall {
   }
 
   Future<dynamic> fetchBooksBySearch(String search) async {
-    var url = Uri.parse("${_baseUrl}search?search=$search");
+    var url = Uri.parse("${_baseUrl}search/$search");
     var response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -26,5 +25,4 @@ class ApiCall {
       throw Exception('Failed to load books by search');
     }
   }
-
 }

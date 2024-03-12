@@ -13,7 +13,8 @@ class SingleBook extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, AppRoutes.bookDescription, arguments: book);
+              Navigator.pushNamed(context, AppRoutes.bookDescription,
+                  arguments: book);
             },
             child: MouseRegion(
                 cursor: SystemMouseCursors.click,
@@ -35,12 +36,11 @@ class SingleBook extends StatelessWidget {
                           color: Theme.of(context).colorScheme.surface,
                           child: ListTile(
                               title: Text(book.title),
-                              subtitle: Text(book.authors
-                                  .elementAt(0)['name']
-                                  .toString())
-                          )
-                              ),
-
+                              subtitle: book.authors.isEmpty
+                                  ? const Text("")
+                                  : Text(book.authors
+                                      .elementAt(0)['name']
+                                      .toString()))),
                     ],
                   ),
                 ))));
