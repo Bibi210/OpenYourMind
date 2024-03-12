@@ -19,8 +19,10 @@ class MultipleBook extends StatefulWidget {
 }
 
 class _MultipleBookState extends State<MultipleBook> {
+  
   @override
   Widget build(BuildContext context) {
+    bool isScreenWide = MediaQuery.sizeOf(context).width >= 600;
     final appBarHeight = Scaffold.of(context).appBarMaxHeight ?? 0;
     final statusBarHeight = MediaQuery.of(context).padding.top;
     final screenHeight = MediaQuery.of(context).size.height;
@@ -47,7 +49,7 @@ class _MultipleBookState extends State<MultipleBook> {
                 return SizedBox(
                   width: widget.isResultPage
                       ? double.infinity
-                      : MediaQuery.of(context).size.width * 0.8,
+                      : isScreenWide ? MediaQuery.of(context).size.width * 0.3 : MediaQuery.of(context).size.width * 0.8,
                   child: SingleBook(book: widget.books[index]),
                 );
               },

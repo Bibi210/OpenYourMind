@@ -21,8 +21,8 @@ class _BookDescriptionPage extends State<BookDescriptionPage> {
 
   void _loadTopBooks() async {
     try {
-      var topBooks = await _bookManager.getTopBooks();
-      setState(() => books = topBooks);
+      var suggestedBooks = await _bookManager.getSuggestedBooks(widget.book.id);
+      setState(() => books = suggestedBooks);
     } catch (e) {
       setState(() => books = []);
     }
@@ -48,11 +48,11 @@ class _BookDescriptionPage extends State<BookDescriptionPage> {
         isSearchBar: false,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Row(
+              
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 BookImage(imageUrl: widget.book.imageUrl),

@@ -9,7 +9,12 @@ class ApiCall {
     var response = await http.get(url);
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      List<dynamic> allBooks = jsonDecode(response.body);
+
+      // Take the first 10 elements
+      List<dynamic> top10Books = allBooks.take(10).toList();
+
+      return top10Books;
     } else {
       throw Exception('Failed to load top books');
     }
@@ -21,6 +26,21 @@ class ApiCall {
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load books by search');
+    }
+  }
+
+  Future<dynamic> fetchSuggestedBooks(int bookId) async {
+    var url = Uri.parse("${_baseUrl}suggest/$bookId");
+    var response = await http.get(url);
+    if (response.statusCode == 200) {
+      List<dynamic> allBooks = jsonDecode(response.body);
+
+      // Take the first 10 elements
+      List<dynamic> topSuggestedBooks = allBooks.take(10).toList();
+
+      return topSuggestedBooks;
     } else {
       throw Exception('Failed to load books by search');
     }

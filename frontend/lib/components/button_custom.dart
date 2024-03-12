@@ -20,7 +20,7 @@ class CustomButton extends StatelessWidget {
         foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
         backgroundColor: MaterialStateProperty.all<Color>(
             Theme.of(context).colorScheme.secondary),),
-      child: Text(text),
+      child: Text(text , style: const TextStyle(fontWeight: FontWeight.bold))
     );
   }
 }

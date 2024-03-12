@@ -22,4 +22,16 @@ class BookManager {
     return books;
   }
 
+  Future<List<Book>> getSuggestedBooks(int bookID) async {
+   var data = await _apiService.fetchSuggestedBooks(bookID);
+    List<Book> books = [];
+    for (var item in data) {
+      books.add(Book.fromJson(item));
+    }
+    return books;
+
+
+
+  }
+
 }
