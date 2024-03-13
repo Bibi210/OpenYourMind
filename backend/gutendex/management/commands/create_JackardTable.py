@@ -1,4 +1,6 @@
-from gutendex.models import Book, JaccardIndex
+from gutendex.views import SearchBook, get_token
+from gutendex.models import Book, JaccardIndex, Keyword, Suggestions
+from django.db.models import Q
 from django.core.management.base import BaseCommand
 import networkx as nx
 
@@ -7,8 +9,35 @@ class Command(BaseCommand):
     help = 'Compute the Jaccard index for each pair of books'
 
     def handle(self, *args, **kwargs):
-        self.jaccardindex()
-        self.compute_centrality()
+        """ self.jaccardindex()
+        self.compute_centrality() """
+        self.pre_suggest_books()
+
+    def pre_suggest_books(self):
+        Suggestions.objects.all().delete()
+        books = Book.objects
+        nb_books = books.count()
+        for book in books.all():
+            print(f'Processing book: {book.title}')
+            idf_sorted_tokens = sorted(get_token(book.title), key=lambda token: Keyword.objects.get(
+                word=token).idf, reverse=True)[:2]
+            print(f'Best tokens: {idf_sorted_tokens}')
+            queryset = SearchBook().search(tokens=idf_sorted_tokens)
+            queryset.remove(book)
+            jaccard_index_map = {}
+            if len(queryset) == 0:
+                queryset = Book.objects.all().exclude(id=book.id)
+            for b in queryset:
+                index = JaccardIndex.objects.get(Q(book1=book, book2=b) | Q(book1=b, book2=book))
+                jaccard_index_map[b] = index.index
+            averageindex = sum(jaccard_index_map.values()) / len(jaccard_index_map)
+            suggestions = list(filter(lambda b: jaccard_index_map[b] < averageindex, queryset))
+            obj = Suggestions.objects.create(book=book)
+            obj.suggested_books.set(suggestions)
+            obj.save()
+            nb_books -= 1
+            print(f'Remaining books: {nb_books}')
+        print('Suggestion computation finished')
 
     def compute_centrality(self):
         G = nx.Graph()

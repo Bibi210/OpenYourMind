@@ -1,9 +1,5 @@
 from django.db import models
 
-# Create your models here.
-
-from django.db import models
-
 
 class Author(models.Model):
     name = models.CharField(max_length=255)
@@ -17,7 +13,7 @@ class Author(models.Model):
 class Keyword(models.Model):
     word = models.CharField(max_length=255, null=True, db_index=True)
     idf = models.FloatField(default=0.0)
-    
+
     def __str__(self):
         return self.word
 
@@ -47,6 +43,14 @@ class Format(models.Model):
 
     def __str__(self):
         return f"{self.book.title} - {self.format_type}"
+    
+
+class Suggestions(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='book')
+    suggested_books = models.ManyToManyField(Book, related_name='suggested_books')
+
+    def __str__(self):
+        return f"{self.book.title} - {self.suggested_books.title}"
 
 
 class BookKeyword(models.Model):
