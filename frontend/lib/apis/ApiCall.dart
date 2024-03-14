@@ -20,10 +20,9 @@ class ApiCall {
     }
   }
 
-  Future<dynamic> fetchBooksBySearch(String search) async {
-    var url = Uri.parse("${_baseUrl}search/$search");
+  Future<dynamic> fetchBooksBySearch(String search, int page) async {
+    var url = Uri.parse("${_baseUrl}search/$search?page=$page");
     var response = await http.get(url);
-
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
