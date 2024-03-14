@@ -1,3 +1,4 @@
+import re
 import nltk
 from django.db.models import Q
 from rest_framework import status
@@ -8,7 +9,7 @@ from concurrent import futures
 import subprocess
 
 
-from gutendex.models import Book, BookKeyword, JaccardIndex, Keyword
+from gutendex.models import Book, BookKeyword, JaccardIndex, Keyword, Suggestions
 from gutendex.serializers import BookSerializer, DetailedBookSerializer
 from functools import partial
 from django.core.paginator import Paginator
@@ -24,8 +25,16 @@ stop_words = set(nltk.corpus.stopwords.words('english'))
 stemmer = nltk.stem.SnowballStemmer('english')
 
 
+def get_pagefrom_request(request):
+    if 'page' in request.GET and request.GET['page'].isdigit():
+        page = int(request.GET['page'])
+        if page < 1:
+            page = 1
+        return page
+
+
 def get_requested_page(request, queryset):
-    page = request.GET.get('page')
+    page = get_pagefrom_request(request)
     paginator = Paginator(queryset, page_size)
     return paginator.get_page(page)
 
@@ -53,6 +62,7 @@ def calculate_score(tokens, book):
 
 
 def get_token(sentence):
+    sentence = sentence.replace('-', ' ').replace('"', ' ')
     tokens = nltk.word_tokenize(sentence)
     tokens = [stemmer.stem(word.lower()) for word in tokens if word.isalpha()
               and word.lower() not in stop_words]
@@ -82,6 +92,8 @@ class SearchBook(APIView):
         return queryset
 
     def search(self, tokens):
+        if len(tokens) == 0:
+            return list(Book.objects.all())
         print(f'Querying for {tokens}')
         result = self.get_matching_all_tokens(tokens)
         print(f'Queryset count: {len(result)}')
@@ -129,59 +141,38 @@ class BookDetail(APIView):
 
 class Suggest(APIView):
     def get(self, request, book_id):
-        print(f'Book id: {book_id}')
-        book = Book.objects.get(pk=book_id)
-        """ Get token with the lowest repetition percentage in all books """
-        idf_sorted_tokens = sorted(get_token(book.title), key=lambda token: Keyword.objects.get(
-            word=token).idf, reverse=True)[:2]
-        print(f'Best tokens: {idf_sorted_tokens}')
-        queryset = SearchBook().search(tokens=idf_sorted_tokens)
-        queryset.remove(book)
-        jaccard_index_map = {}
-        for b in queryset:
-            index = JaccardIndex.objects.get(Q(book1=book, book2=b) | Q(book1=b, book2=book))
-            jaccard_index_map[b] = index.index
-
-        averageindex = sum(jaccard_index_map.values()) / len(jaccard_index_map)
-        queryset = list(filter(lambda b: jaccard_index_map[b] < averageindex, queryset))
+        queryset = Suggestions.objects.get(book_id=book_id).suggested_books.all()
         serializer = BookSerializer(get_requested_page(request, queryset), many=True)
         return Response(serializer.data)
 
 
 class RegExSearch(APIView):
-
-    def check_book(self, book, regex, format_type):
-        url = book.formats.get(format_type=format_type).url
-        rawtext = requests.get(url).text
-        try:
-            subprocess.run(['egrep', '-q', regex, '-'], input=rawtext.encode(),
-                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
-            print(f'Book {book.title} MATCH')
-        except subprocess.CalledProcessError:
-            print(f'Book {book.title} NO')
-            return None
-        return book
-
     def get(self, request, regex):
-        eligible_books = Book.objects.filter(formats__format_type__in=['text/plain; charset=us-ascii']).distinct()
-        """ Create Batch of 10 books """
-        batch = []
-        matchs = []
-        check = partial(self.check_book, regex=regex, format_type='text/plain; charset=us-ascii')
-        executor = futures.ThreadPoolExecutor()
-        requested_page = request.GET.get('page')
-        if requested_page is None:
-            requested_page = 1
-        else:
-            requested_page = int(requested_page)
-        print(f'Requested page: {requested_page}')
-        for book in eligible_books:
-            batch.append(book)
-            if len(batch) == page_size + (page_size * 0.5):
-                matchs += list(filter(lambda b: b is not None, executor.map(check, batch)))
-                batch = []
-            if len(matchs) > page_size * requested_page:
-                break
-        output = get_requested_page(request, matchs)
-        serializer = BookSerializer(output, many=True)
+        """ Check regex validity"""
+        try:
+            re.compile(regex)
+        except re.error:
+            return Response(data={"error": "Invalid regex"}, status=status.HTTP_400_BAD_REQUEST)
+        print(f'Querying in title for {regex}')
+        result = Book.objects.filter(title__iregex=regex)
+        it = Book.objects.all().difference(result).iterator()
+        regex = regex.lower()
+
+        result = list(result)
+        if Keyword.objects.filter(word__iregex=regex).exists():
+            while len(result) < get_pagefrom_request(request) * page_size:
+                try:
+                    b = next(it)
+                    b.keywords.get(word__iregex=regex)
+                    result.append(b)
+                    print(f'Added {b.title}')
+
+                except StopIteration:
+                    break
+                except Keyword.DoesNotExist:
+                    pass
+
+        result = sorted(result, key=lambda x: x.betweenness_centrality, reverse=True)
+        result = get_requested_page(request, result)
+        serializer = BookSerializer(result, many=True)
         return Response(serializer.data)
