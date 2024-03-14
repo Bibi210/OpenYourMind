@@ -31,11 +31,14 @@ def get_pagefrom_request(request):
         if page < 1:
             page = 1
         return page
+    return 1
 
 
 def get_requested_page(request, queryset):
     page = get_pagefrom_request(request)
     paginator = Paginator(queryset, page_size)
+    if paginator.num_pages < page : 
+        return []
     return paginator.get_page(page)
 
 
