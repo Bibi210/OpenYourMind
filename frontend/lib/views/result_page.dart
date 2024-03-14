@@ -17,13 +17,20 @@ class _ResultPage extends State<ResultPage> {
   String currentSearch = '';
   final BookManager _bookManager = BookManager();
   List<Book>? books;
+  List<Book>? nextBooks;
+  bool isLoading = false;
 
   void _loadResultBooks(int page) async {
     try {
       var resultBooks =
           await _bookManager.getBooksBySearch(widget.search, page);
-      currentSearch = widget.search;
-      setState(() => books = resultBooks);
+      var resultNextBooks =
+          await _bookManager.getBooksBySearch(widget.search, page + 1);
+      setState(() {
+        currentSearch = widget.search;
+        books = resultBooks;
+        nextBooks = resultNextBooks;
+      });
     } catch (e) {
       setState(() => books = []);
     }
@@ -31,21 +38,35 @@ class _ResultPage extends State<ResultPage> {
 
   void _loadResultAndUpdateBooks(String query, int page) async {
     try {
-      currentPage = page;
-      currentSearch = query;
+      setState(() {
+        isLoading = true; // Set isLoading to true when data fetching starts
+      });
       var resultBooks = await _bookManager.getBooksBySearch(query, page);
-      setState(() => books = resultBooks);
+      var resultNextBooks =
+          await _bookManager.getBooksBySearch(query, page + 1);
+      nextBooks = resultNextBooks;
+      setState(() {
+        books = resultBooks;
+        isLoading =
+            false; // Set isLoading to false after data fetching completes
+      });
     } catch (e) {
-      setState(() => books = []);
+      setState(() {
+        books = [];
+        isLoading =
+            false; // Set isLoading to false if an error occurs during data fetching
+      });
     }
   }
 
   void _searchAndUpdateBooks(String query, int page) {
-    currentSearch = query;
-    currentPage = page;
     setState(() {
       books = null;
+      currentSearch = query;
+      currentPage = page;
     });
+    print(
+        'Before _loadResultAndUpdateBooks: nextBooks: $nextBooks, isLoading: $isLoading, currentPage: $currentPage');
     _loadResultAndUpdateBooks(query, page);
   }
 
@@ -63,49 +84,49 @@ class _ResultPage extends State<ResultPage> {
             isReset: true,
             search: widget.search,
             onSearch: (query) => _searchAndUpdateBooks(query, 1)),
-        body: (books == null
-            ? const Center(child: CircularProgressIndicator())
-            : (books!.isEmpty)
-                ? const Text(
-                    'No books found.',
-                    textAlign: TextAlign.center,
-                  )
-                : SingleChildScrollView(
-                    child: Column(
-                    children: [
-                      MultipleBook(
-                          isResultPage: true,
-                          label: "Search Results",
-                          books: books!),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        body: SingleChildScrollView(
+            child: (books == null
+                ? const Center(child: CircularProgressIndicator())
+                : (books!.isEmpty)
+                    ? const Text(
+                        'No books found.',
+                        textAlign: TextAlign.center,
+                      )
+                    : Column(
                         children: [
-                          IconButton(
-                            onPressed: currentPage > 1
-                                ? () {
-                                    setState(() {
-                                      currentPage--; // Decrement the current page
-                                      _loadResultAndUpdateBooks(
-                                          currentSearch, currentPage);
-                                    });
-                                  }
-                                : null,
-                            icon: const Icon(Icons.arrow_back),
-                          ),
-                          Text('Page $currentPage'),
-                          IconButton(
-                            onPressed: () {
-                              setState(() {
-                                currentPage++; // Increment the current page
-                                _loadResultAndUpdateBooks(
-                                    currentSearch, currentPage);
-                              });
-                            },
-                            icon: const Icon(Icons.arrow_forward),
+                          MultipleBook(
+                              isResultPage: true,
+                              label: "Search Results",
+                              books: books!),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              IconButton(
+                                onPressed: currentPage > 1
+                                    ? () {
+                                        setState(() {
+                                          currentPage--; // Decrement the current page
+                                          _loadResultAndUpdateBooks(
+                                              currentSearch, currentPage);
+                                        });
+                                      }
+                                    : null,
+                                icon: const Icon(Icons.arrow_back),
+                              ),
+                              Text('Page $currentPage'),
+                              IconButton(
+                                onPressed: nextBooks!.isNotEmpty
+                                    ? () {
+                                        currentPage++;
+                                        _loadResultAndUpdateBooks(
+                                            currentSearch, currentPage);
+                                      }
+                                    : null,
+                                icon: const Icon(Icons.arrow_forward),
+                              )
+                            ],
                           ),
                         ],
-                      ),
-                    ],
-                  ))));
+                      ))));
   }
 }
