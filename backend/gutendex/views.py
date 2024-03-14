@@ -92,6 +92,8 @@ class SearchBook(APIView):
         return queryset
 
     def search(self, tokens):
+        if len(tokens) == 0:
+            return list(Book.objects.all())
         print(f'Querying for {tokens}')
         result = self.get_matching_all_tokens(tokens)
         print(f'Queryset count: {len(result)}')

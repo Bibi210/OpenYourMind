@@ -19,11 +19,19 @@ class Command(BaseCommand):
         nb_books = books.count()
         for book in books.all():
             print(f'Processing book: {book.title}')
-            idf_sorted_tokens = sorted(get_token(book.title), key=lambda token: Keyword.objects.get(
-                word=token).idf, reverse=True)[:2]
+
+            def sort_by_idf(token):
+                try:
+                    return Keyword.objects.get(word=token).idf
+                except Keyword.DoesNotExist:
+                    return 0
+            idf_sorted_tokens = sorted(get_token(book.title), key=sort_by_idf, reverse=True)[:2]
             print(f'Best tokens: {idf_sorted_tokens}')
             queryset = SearchBook().search(tokens=idf_sorted_tokens)
-            queryset.remove(book)
+            try:
+                queryset.remove(book)
+            except ValueError:
+                pass
             jaccard_index_map = {}
             if len(queryset) == 0:
                 queryset = Book.objects.all().exclude(id=book.id)
