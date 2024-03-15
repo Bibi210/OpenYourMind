@@ -57,7 +57,7 @@ class _SearchBarState extends State<SearchBarCustom> {
                 ? null
                 : Icon(Icons.search,
                     color: Theme.of(context).colorScheme.primary),
-            suffixIcon: _controller.text.isNotEmpty
+            suffixIcon: widget.isAppbar ? _controller.text.isNotEmpty
               ? IconButton(
                   icon: const Icon(Icons.clear),
                   onPressed: () {
@@ -66,7 +66,7 @@ class _SearchBarState extends State<SearchBarCustom> {
                     });
                   },
                 )
-              : null,
+              : null : null,
             filled: true,
             fillColor: widget.isAppbar
                 ? Colors.grey[300]
