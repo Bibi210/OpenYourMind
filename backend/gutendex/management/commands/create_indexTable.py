@@ -1,14 +1,10 @@
-import nltk
 import requests
 from django.core.management.base import BaseCommand
-from gutendex.models import Keyword, Format, BookKeyword, Book
+from gutendex.models import Keyword, BookKeyword, Book
 from django.db.models import Count
 from django.db import transaction
 import math
-
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
+from gutendex.helpers import *
 
 
 class Command(BaseCommand):
@@ -42,9 +38,6 @@ class Command(BaseCommand):
         print("IDF calculation completed.")
 
     def create_Table(self):
-        stop_words = set(nltk.corpus.stopwords.words('english'))
-        stemmer = nltk.stem.SnowballStemmer('english')
-
         batch_size = 100
         eligible_books = Book.objects.filter(formats__format_type__in=['text/plain; charset=us-ascii']).distinct()
 
@@ -57,9 +50,7 @@ class Command(BaseCommand):
                     if not format:
                         continue
                     rawtext = requests.get(format.url).text
-                    tokens = nltk.word_tokenize(rawtext)
-                    tokens = [word.lower() for word in tokens if word.isalpha() and word.lower() not in stop_words]
-                    tokens = [stemmer.stem(word) for word in tokens]
+                    tokens = get_token(rawtext)
 
                     word_counts = {}
                     for word in tokens:

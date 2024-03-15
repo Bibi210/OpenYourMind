@@ -9,8 +9,8 @@ class Command(BaseCommand):
     help = 'Compute the Jaccard index for each pair of books'
 
     def handle(self, *args, **kwargs):
-        """ self.jaccardindex()
-        self.compute_centrality() """
+        self.jaccardindex()
+        self.compute_centrality()
         self.pre_suggest_books()
 
     def pre_suggest_books(self):
