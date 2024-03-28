@@ -109,7 +109,7 @@ Au vu de la taille du projet, nous avons opté pour une architecture simple de t
 
 Voici à titre indicatif, un diagramme de la base de données :
 
-![Database Diagram](./backend/db.png)
+![Database Diagram](../backend/db.png)
 
 ### EndPoints
 
@@ -147,7 +147,7 @@ Soit $G = (V, E)$ un graphe géométrique où $V$ est l'ensemble des livres et $
 On construit $E$ de la manière suivante :
 
 - On determine la moyenne des similarités de Jaccard entre chaque livre
-  $$ k = \frac{1}{|V|*|V|-1}\sum\_{v,u \in V*V} \text{Jaccard}(u, v)\ u \neq v$$
+  $$ k = \frac{\sum{v,u \in V*V} \text{Jaccard}(u, v)}{|V|*|V|-1}\ u \neq v$$
 - Pour éviter de se connecter a trop de livres, on augemente $k$ de 30%.
   $$ threashold = k + 0.3k$$
 $$ E = \{(u, v) \in V \times V \mid \text{Jaccard}(u, v) \geq threashold\}$$
@@ -194,6 +194,13 @@ Nous avions un objectif principal :
 Pour ce faire, nous avons utilisé une technique principale le précalcul, ainsi nous avons precalculé les valeurs de [Betweenness](#heuristiques), [Closeness](#heuristiques), [TF-IDF](#heuristiques) pour chaque livre et chaque mot clé.
 
 ### Tests
+
+Nous avons testé la performance de notre moteur de recherche sur un ensemble de 140 requêtes de type keyword/regex aléatoire.
+Voici les résultats de nos tests :
+
+![Average Response Time](./avgTotal.png)
+
+![Per Endpoint Response Time](./avgPerEndPoint.png)
 
 # Frontend
 
