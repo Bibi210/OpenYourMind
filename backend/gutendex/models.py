@@ -43,14 +43,6 @@ class Format(models.Model):
 
     def __str__(self):
         return f"{self.book.title} - {self.format_type}"
-    
-
-class Suggestions(models.Model):
-    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='book')
-    suggested_books = models.ManyToManyField(Book, related_name='suggested_books')
-
-    def __str__(self):
-        return f"{self.book.title} - {self.suggested_books.title}"
 
 
 class BookKeyword(models.Model):

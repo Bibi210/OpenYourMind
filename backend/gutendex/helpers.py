@@ -1,6 +1,6 @@
 from functools import partial
 import re
-from gutendex.models import Book, BookKeyword, Keyword
+from gutendex.models import Book, BookKeyword, JaccardIndex, Keyword
 from django.db.models import Q
 import nltk
 from django.core.paginator import Paginator
@@ -36,28 +36,6 @@ def get_page(page, queryset):
     return paginator.get_page(page)
 
 
-def calculate_score(tokens, book):
-    average_tf = 0
-    average_idf = 0
-    for token in tokens:
-        try:
-            word = Keyword.objects.get(word=token)
-            idf = word.idf
-            tf = BookKeyword.objects.filter(book=book).get(keyword=word).repetition_percentage
-            average_tf += tf
-            average_idf += idf
-        except (BookKeyword.DoesNotExist, Keyword.DoesNotExist):
-            pass
-
-    tokenlen = len(tokens)
-    average_idf = average_idf / tokenlen
-    average_tf = average_tf / tokenlen
-    average_tf = 0.7 * average_tf * average_idf
-    closeness_score = 0.15 * book.closeness_centrality
-    betweenness_score = 0.15 * book.betweenness_centrality
-    return average_tf + closeness_score + betweenness_score
-
-
 def can_tokenize(s):
     # Regular expression to match letters, numbers, and space
     pattern = r'^[a-zA-Z0-9\s]*$'
@@ -65,12 +43,18 @@ def can_tokenize(s):
     return re.match(pattern, s) is not None
 
 
+def raw_tokenize(sentence):
+    tokens = nltk.word_tokenize(sentence)
+    tokens = [stemmer.stem(word.lower()) for word in tokens if word.isalpha()
+              and word.lower() not in stop_words]
+    """ Remove duplicates """
+    return list(set(tokens))
+
+
 def get_token(sentence):
     sentence = ''.join([c for c in sentence if c not in invalid_chars])
     if can_tokenize(sentence):
-        tokens = nltk.word_tokenize(sentence)
-        tokens = [stemmer.stem(word.lower()) for word in tokens if word.isalpha()
-                  and word.lower() not in stop_words]
+        tokens = raw_tokenize(sentence)
         if len(tokens) > 0:
             return tokens
     return None
@@ -133,9 +117,8 @@ def search_regex(regex, page):
         while len(result) < page * page_size:
             try:
                 b = next(title_not_matching_books)
-                b.keywords.get(word__iregex=regex)
-                result.append(b)
-                print(f'Added {b.title}')
+                if b.keywords.filter(word__iregex=regex).exists():
+                    result.append(b)
 
             except StopIteration:
                 break
@@ -143,3 +126,43 @@ def search_regex(regex, page):
                 pass
     result = sorted(result, key=lambda x: x.betweenness_centrality, reverse=True)
     return result
+
+
+def calculate_score(tokens, book):
+    average_tf = 0
+    average_idf = 0
+    for token in tokens:
+        try:
+            word = Keyword.objects.get(word=token)
+            idf = word.idf
+            tf = BookKeyword.objects.filter(book=book).get(keyword=word).repetition_percentage
+            average_tf += tf
+            average_idf += idf
+        except (BookKeyword.DoesNotExist, Keyword.DoesNotExist):
+            pass
+
+    tokenlen = len(tokens)
+    average_idf = average_idf / tokenlen
+    average_tf = average_tf / tokenlen
+    average_tf = 0.7 * average_tf * average_idf
+    closeness_score = 0.15 * book.closeness_centrality
+    betweenness_score = 0.15 * book.betweenness_centrality
+    return average_tf + closeness_score + betweenness_score
+
+
+def get_threasold_for_ls(query_set, percentage=0.3):
+
+    def get_index(jaccard):
+        if isinstance(jaccard, float):
+            return jaccard
+        return jaccard.index
+
+    average = sum([get_index(jaccard) for jaccard in query_set]) / len(query_set)
+    output = average + (average * percentage)
+    if output > 1:
+        return 1
+    return output
+
+
+def get_threasold_for_graph(percentage=0.3):
+    return get_threasold_for_ls(JaccardIndex.objects.all(), percentage)

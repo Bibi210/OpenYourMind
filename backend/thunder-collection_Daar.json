@@ -1,0 +1,150 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "Daar",
+    "dateExported": "2024-03-27T13:13:41.953Z",
+    "version": "1.1",
+    "folders": [],
+    "requests": [
+        {
+            "_id": "de4babe2-3d03-4449-a298-ab6d4c04975c",
+            "colId": "b0c6878e-16cb-44c6-8f69-2c787f63c39e",
+            "containerId": "",
+            "name": "Frankenstein Beast Page 1",
+            "url": "http://127.0.0.1:8000/search/Frankenstein Beast?page=1",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2024-03-08T08:14:45.887Z",
+            "modified": "2024-03-14T15:10:57.935Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "page",
+                    "value": "1",
+                    "isPath": false
+                }
+            ],
+            "reqType": "get",
+            "tests": []
+        },
+        {
+            "_id": "66e58f4f-8a15-4a08-adfb-7e61423b8c9d",
+            "colId": "b0c6878e-16cb-44c6-8f69-2c787f63c39e",
+            "containerId": "",
+            "name": "Arthur Page 1",
+            "url": "http://127.0.0.1:8000/search/Sherlock Holmes?page=1",
+            "method": "GET",
+            "sortNum": 10625,
+            "created": "2024-03-12T09:16:49.888Z",
+            "modified": "2024-03-14T15:11:08.442Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "page",
+                    "value": "1",
+                    "isPath": false
+                }
+            ],
+            "reqType": "get",
+            "tests": []
+        },
+        {
+            "_id": "de03ddbf-0235-4356-a4ed-59f6683e2030",
+            "colId": "b0c6878e-16cb-44c6-8f69-2c787f63c39e",
+            "containerId": "",
+            "name": "Regex Arthur P1",
+            "url": "http://127.0.0.1:8000/search/A*?page=1",
+            "method": "GET",
+            "sortNum": 11250,
+            "created": "2024-03-12T08:03:54.371Z",
+            "modified": "2024-03-15T10:52:09.743Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "page",
+                    "value": "1",
+                    "isPath": false
+                }
+            ],
+            "reqType": "get",
+            "tests": []
+        },
+        {
+            "_id": "84e73de3-c958-42a6-be66-4bfc1daec9cc",
+            "colId": "b0c6878e-16cb-44c6-8f69-2c787f63c39e",
+            "containerId": "",
+            "name": "Suggest From Frankenstein ",
+            "url": "http://127.0.0.1:8000/suggest/41445?page=1",
+            "method": "GET",
+            "sortNum": 12500,
+            "created": "2024-03-08T08:15:55.053Z",
+            "modified": "2024-03-14T07:04:48.250Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "page",
+                    "value": "1",
+                    "isPath": false
+                }
+            ],
+            "reqType": "get",
+            "tests": []
+        },
+        {
+            "_id": "e9a8b594-102d-43a6-ae45-039256525fa4",
+            "colId": "b0c6878e-16cb-44c6-8f69-2c787f63c39e",
+            "containerId": "",
+            "name": "Frankenstein Page1",
+            "url": "http://127.0.0.1:8000/search/Frankenstein?page=1",
+            "method": "GET",
+            "sortNum": 15000,
+            "created": "2024-03-08T08:15:14.300Z",
+            "modified": "2024-03-12T08:58:10.972Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "page",
+                    "value": "1",
+                    "isPath": false
+                }
+            ],
+            "reqType": "get",
+            "tests": []
+        },
+        {
+            "_id": "dbf20f81-25cf-4a4c-a569-8eb01257156d",
+            "colId": "b0c6878e-16cb-44c6-8f69-2c787f63c39e",
+            "containerId": "",
+            "name": "Top Betweeness",
+            "url": "http://127.0.0.1:8000/highest-betweenness?page=1",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2024-03-08T08:15:07.683Z",
+            "modified": "2024-03-08T08:15:07.683Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "page",
+                    "value": "1",
+                    "isPath": false
+                }
+            ],
+            "reqType": "get",
+            "tests": []
+        },
+        {
+            "_id": "242e1475-7bab-4089-94aa-89d936cb16b3",
+            "colId": "b0c6878e-16cb-44c6-8f69-2c787f63c39e",
+            "containerId": "",
+            "name": "Suggest",
+            "url": "http://127.0.0.1:8000/suggest/108",
+            "method": "GET",
+            "sortNum": 30000,
+            "created": "2024-03-12T07:58:16.391Z",
+            "modified": "2024-03-13T13:14:07.960Z",
+            "headers": [],
+            "params": [],
+            "reqType": "get",
+            "tests": []
+        }
+    ]
+}
