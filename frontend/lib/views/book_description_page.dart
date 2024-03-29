@@ -19,7 +19,7 @@ class _BookDescriptionPage extends State<BookDescriptionPage> {
   final BookManager _bookManager = BookManager();
   List<Book>? books;
 
-  void _loadTopBooks() async {
+  void _loadSuggestedBooks() async {
     try {
       var suggestedBooks = await _bookManager.getSuggestedBooks(widget.book.id);
       setState(() => books = suggestedBooks);
@@ -30,7 +30,7 @@ class _BookDescriptionPage extends State<BookDescriptionPage> {
 
   @override
   void initState() {
-    _loadTopBooks();
+    _loadSuggestedBooks();
     super.initState();
   }
 
