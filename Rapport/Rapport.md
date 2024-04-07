@@ -236,6 +236,20 @@ Pour le FrontEnd, nous avons choisi de baser notre architecture sur le concept d
 
 Notre Application se compose pricipalement de 3 vues "Home", "result_page" et "book_description_page".
 
+![Accueil Web](./accueilpc.png)
+
+![Accueil mobile](./accueilphone.png)
+
+![Result Web](./resultpc.png)
+
+![Result mobile](./resultphone.png)
+
+![Suggestions mobile](./suggestions.png)
+
+![Detail mobile](./detailphone.png)
+
+
+
 ### Home
 
 Pour la page d'accueil, nous avons opté pour un design simple et intuitif en intégrant notre composant app_bar_Custom et en plaçant au centre de la page notre barre de recherche, juste au-dessus de la section affichant les 10 meilleurs livres qui utilise le composant multiple_book qu'on detaillera par la suite. Lorsque la page est initialisée, la méthode initState() est appelée, chargée de récupérer les meilleurs livres à afficher en invoquant la méthode _loadTopBooks() du BookManager.
